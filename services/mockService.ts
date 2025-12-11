@@ -1,0 +1,246 @@
+
+import { Booking, BookingStatus, Provider, User, UserRole, ServiceCategory, SupportTicket, AdminRole } from '../types';
+import { MOCK_PROVIDERS, COMMISSION_RATE, MOCK_TICKETS, ADMIN_CREDENTIALS } from '../constants';
+
+// Simulating In-Memory Database
+let bookings: Booking[] = [
+  {
+    id: 'b-init-1',
+    customerId: 'u1',
+    providerId: 'p1',
+    providerName: 'Sarah Jenkins',
+    serviceCategory: ServiceCategory.CLEANING,
+    bookingType: 'STANDARD',
+    date: '2023-11-01',
+    time: '10:00',
+    durationHours: 3,
+    totalPrice: 103.5,
+    status: BookingStatus.COMPLETED,
+    createdAt: new Date().toISOString()
+  }
+];
+
+let providers = [...MOCK_PROVIDERS];
+let tickets = [...MOCK_TICKETS];
+
+// Mock Users (Customers) for Admin view
+let customers: User[] = [
+    { id: 'u1', name: 'Alice Johnson', email: 'alice@test.com', role: UserRole.CUSTOMER, rating: 4.8, isBanned: false, avatar: 'https://picsum.photos/200?random=10' },
+    { id: 'u2', name: 'Bob Smith', email: 'bob@test.com', role: UserRole.CUSTOMER, rating: 2.2, isBanned: false, avatar: 'https://picsum.photos/200?random=11' } // Low rating customer
+];
+
+export const api = {
+  login: async (email: string, role?: UserRole, password?: string): Promise<User | Provider> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // 1. Check Admin Login
+        const adminAccount = ADMIN_CREDENTIALS.find(c => c.email === email && c.password === password);
+        if (adminAccount) {
+            resolve({
+                id: 'admin-01',
+                name: adminAccount.name,
+                email: adminAccount.email,
+                role: UserRole.ADMIN,
+                adminRole: adminAccount.role,
+                avatar: 'https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff'
+            });
+            return;
+        }
+
+        // 2. Provider Login
+        const existingProvider = providers.find(p => p.email === email);
+        if (existingProvider && (role === UserRole.PROVIDER || !role)) {
+            resolve(existingProvider);
+            return;
+        }
+        
+        // 3. New Provider Mock (for demo)
+        if (role === UserRole.PROVIDER) {
+             const newProvider: Provider = {
+                id: `p-${Date.now()}`,
+                name: email.split('@')[0],
+                email,
+                role: UserRole.PROVIDER,
+                serviceCategory: ServiceCategory.CLEANING,
+                hourlyRate: 50,
+                services: [
+                    { category: ServiceCategory.CLEANING, price: 50, description: 'Standard Service' }
+                ],
+                teamMembers: [],
+                rating: 0,
+                reviewCount: 0,
+                distanceKm: 1,
+                verified: false,
+                bio: 'New service provider.',
+                avatar: `https://picsum.photos/200/200?random=${Math.floor(Math.random() * 100)}`,
+                availabilityStatus: 'AVAILABLE',
+                isBanned: false
+            };
+            providers.push(newProvider);
+            resolve(newProvider);
+            return;
+        }
+
+        // 4. Customer Login
+        const existingCustomer = customers.find(c => c.email === email);
+        if (existingCustomer) {
+            resolve(existingCustomer);
+            return;
+        }
+
+        // Default Customer Mock
+        resolve({
+          id: 'u1',
+          name: email.split('@')[0],
+          email,
+          role: UserRole.CUSTOMER,
+          avatar: `https://picsum.photos/200/200?random=${Math.floor(Math.random() * 100)}`,
+          rating: 5.0,
+          isBanned: false
+        });
+      }, 800);
+    });
+  },
+
+  searchProviders: async (
+    category?: ServiceCategory,
+    maxDistance?: number
+  ): Promise<Provider[]> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        let results = providers.filter(p => !p.isBanned && p.verified); // Only show verified & non-banned
+        if (category) {
+          results = results.filter(p => p.services.some(s => s.category === category) || p.serviceCategory === category);
+        }
+        if (maxDistance) {
+          results = results.filter(p => p.distanceKm <= maxDistance);
+        }
+        resolve(results);
+      }, 600);
+    });
+  },
+
+  getProviderById: async (id: string): Promise<Provider | undefined> => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(providers.find(p => p.id === id)), 300);
+    });
+  },
+
+  createBooking: async (bookingData: Omit<Booking, 'id' | 'status' | 'createdAt' | 'totalPrice' | 'bookingType'> & { bookingType?: 'STANDARD' | 'CONSULTATION' }): Promise<Booking> => {
+    return new Promise((resolve) => {
+      const providerIndex = providers.findIndex(p => p.id === bookingData.providerId);
+      const provider = providers[providerIndex];
+      
+      const serviceOffering = provider?.services.find(s => s.category === bookingData.serviceCategory);
+      const hourlyRate = serviceOffering ? serviceOffering.price : (provider?.hourlyRate || 0);
+
+      const basePrice = hourlyRate * bookingData.durationHours;
+      const totalPrice = basePrice + (basePrice * COMMISSION_RATE);
+
+      const newBooking: Booking = {
+        ...bookingData,
+        bookingType: bookingData.bookingType || 'STANDARD',
+        id: `b-${Date.now()}`,
+        status: BookingStatus.REQUESTED,
+        createdAt: new Date().toISOString(),
+        totalPrice
+      };
+      
+      bookings = [newBooking, ...bookings];
+
+      if (provider) {
+          const updatedProvider = { ...provider, availabilityStatus: 'BUSY' as const };
+          providers[providerIndex] = updatedProvider;
+      }
+
+      setTimeout(() => resolve(newBooking), 1000);
+    });
+  },
+
+  getBookings: async (userId: string, role: UserRole): Promise<Booking[]> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (role === UserRole.PROVIDER) {
+          resolve(bookings.filter(b => b.providerId === userId));
+        } else {
+          resolve(bookings.filter(b => b.customerId === userId));
+        }
+      }, 500);
+    });
+  },
+
+  updateProviderProfile: async (providerId: string, updates: Partial<Provider>): Promise<Provider> => {
+      return new Promise((resolve) => {
+          setTimeout(() => {
+            const index = providers.findIndex(p => p.id === providerId);
+            if (index !== -1) {
+                providers[index] = { ...providers[index], ...updates };
+                resolve(providers[index]);
+            } else {
+                throw new Error("Provider not found");
+            }
+          }, 300);
+      });
+  },
+
+  checkUserExists: async (email: string): Promise<boolean> => {
+      return new Promise(resolve => setTimeout(() => resolve(true), 500)); 
+  },
+
+  // --- Admin Functions ---
+
+  getTickets: async (): Promise<SupportTicket[]> => {
+      return new Promise(resolve => setTimeout(() => resolve(tickets), 400));
+  },
+
+  createTicket: async (ticket: Omit<SupportTicket, 'id' | 'createdAt' | 'status'>): Promise<SupportTicket> => {
+      return new Promise(resolve => {
+          const newTicket: SupportTicket = {
+              ...ticket,
+              id: `t-${Date.now()}`,
+              status: 'OPEN',
+              createdAt: new Date().toISOString()
+          };
+          tickets = [newTicket, ...tickets];
+          setTimeout(() => resolve(newTicket), 500);
+      });
+  },
+
+  resolveTicket: async (ticketId: string): Promise<void> => {
+      return new Promise(resolve => {
+          tickets = tickets.map(t => t.id === ticketId ? { ...t, status: 'RESOLVED' } : t);
+          setTimeout(resolve, 300);
+      });
+  },
+
+  getAllProviders: async (): Promise<Provider[]> => {
+      return new Promise(resolve => setTimeout(() => resolve(providers), 400));
+  },
+  
+  getAllCustomers: async (): Promise<User[]> => {
+      return new Promise(resolve => setTimeout(() => resolve(customers), 400));
+  },
+
+  toggleProviderVerification: async (providerId: string): Promise<void> => {
+      return new Promise(resolve => {
+          const idx = providers.findIndex(p => p.id === providerId);
+          if (idx !== -1) {
+              providers[idx] = { ...providers[idx], verified: !providers[idx].verified };
+          }
+          setTimeout(resolve, 300);
+      });
+  },
+
+  toggleUserBan: async (userId: string, role: UserRole): Promise<void> => {
+      return new Promise(resolve => {
+          if (role === UserRole.PROVIDER) {
+            const idx = providers.findIndex(p => p.id === userId);
+            if (idx !== -1) providers[idx] = { ...providers[idx], isBanned: !providers[idx].isBanned };
+          } else {
+            const idx = customers.findIndex(c => c.id === userId);
+            if (idx !== -1) customers[idx] = { ...customers[idx], isBanned: !customers[idx].isBanned };
+          }
+          setTimeout(resolve, 300);
+      });
+  }
+};
