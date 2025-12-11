@@ -19,8 +19,19 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
   const [isSaving, setIsSaving] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const { name, value } = e.target;
+
+  // Validate phone: allow only digits up to 10
+  if (name === "phone") {
+    if (!/^\d{0,10}$/.test(value)) return; 
+  }
+
+  // Validate name: don't allow less than 3 chars *after user starts typing*
+  if (name === "name") {
+    if (value.length > 0 && value.length < 3) {
+      // Still allow typing but you can show an error later
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
