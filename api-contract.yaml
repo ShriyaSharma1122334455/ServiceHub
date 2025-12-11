@@ -1,0 +1,406 @@
+openapi: 3.0.0
+info:
+  title: ServiceHub API
+  description: API contract for the ServiceHub On-Demand Home Services Platform.
+  version: 1.0.0
+servers:
+  - url: https://api.servicehub.com/v1
+    description: Production Server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Invalid request parameters"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [CUSTOMER, PROVIDER, ADMIN]
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        base_price:
+          type: number
+          format: float
+        description:
+          type: string
+
+    ProviderProfile:
+      type: object
+      properties:
+        provider_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        rating:
+          type: number
+          format: float
+        hourly_rate:
+          type: number
+          format: float
+        distance_km:
+          type: number
+          format: float
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+
+    Booking:
+      type: object
+      properties:
+        booking_id:
+          type: string
+          format: uuid
+        provider_name:
+          type: string
+        service_name:
+          type: string
+        status:
+          type: string
+          enum: [REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED]
+        scheduled_time:
+          type: string
+          format: date-time
+        total:
+          type: number
+          format: float
+
+security:
+  - BearerAuth: []
+
+paths:
+  # --- Authentication ---
+  /auth/register:
+    post:
+      summary: Register a new user
+      security: []
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, role, name, phone]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                role:
+                  type: string
+                  enum: [CUSTOMER, PROVIDER]
+                name:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+                  token:
+                    type: string
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      summary: Login user
+      security: []
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # --- Services ---
+  /services:
+    get:
+      summary: List all available services
+      tags: [Services]
+      security: []
+      responses:
+        '200':
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+
+  # --- Providers ---
+  /providers/search:
+    get:
+      summary: Search for providers
+      tags: [Providers]
+      parameters:
+        - in: query
+          name: service_id
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: lat
+          schema:
+            type: number
+            format: float
+          required: true
+        - in: query
+          name: lng
+          schema:
+            type: number
+            format: float
+          required: true
+        - in: query
+          name: radius
+          schema:
+            type: number
+            default: 10
+          description: Search radius in km
+      responses:
+        '200':
+          description: List of matching providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderProfile'
+        '400':
+          description: Invalid parameters
+
+  /providers/register:
+    post:
+      summary: Register provider details (Onboarding)
+      tags: [Providers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service_ids, hourly_rate, lat, lng]
+              properties:
+                service_ids:
+                  type: array
+                  items:
+                    type: string
+                hourly_rate:
+                  type: number
+                lat:
+                  type: number
+                lng:
+                  type: number
+      responses:
+        '201':
+          description: Provider profile created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  provider_id:
+                    type: string
+                  status:
+                    type: string
+                    example: "PENDING_VERIFICATION"
+        '401':
+          description: Unauthorized
+
+  # --- Bookings ---
+  /bookings:
+    post:
+      summary: Create a new booking
+      tags: [Bookings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_id, service_id, scheduled_time, hours]
+              properties:
+                provider_id:
+                  type: string
+                service_id:
+                  type: string
+                scheduled_time:
+                  type: string
+                  format: date-time
+                hours:
+                  type: number
+      responses:
+        '201':
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  booking_id:
+                    type: string
+                  total_amount:
+                    type: number
+                  status:
+                    type: string
+                    example: "REQUESTED"
+        '404':
+          description: Provider or Service not found
+
+  /bookings/me:
+    get:
+      summary: Get current user's bookings
+      tags: [Bookings]
+      responses:
+        '200':
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+
+  /bookings/{id}/status:
+    patch:
+      summary: Update booking status
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED]
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  booking_id:
+                    type: string
+                  new_status:
+                    type: string
+        '404':
+          description: Booking not found
+
+  # --- Reviews ---
+  /reviews:
+    post:
+      summary: Submit a review
+      tags: [Reviews]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id, rating]
+              properties:
+                booking_id:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+      responses:
+        '201':
+          description: Review submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  review_id:
+                    type: string
+        '400':
+          description: Invalid rating or booking not eligible
