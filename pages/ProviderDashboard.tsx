@@ -4,7 +4,7 @@ import { Provider, Booking, BookingStatus, ServiceCategory, ServiceOffering } fr
 import { api } from '../services/mockService';
 import { 
     LayoutDashboard, Users, Calendar, Settings, DollarSign, 
-    Clock, AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle 
+    Clock, AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save
 } from 'lucide-react';
 
 interface ProviderDashboardProps {
@@ -16,13 +16,24 @@ interface ProviderDashboardProps {
 export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: initialProvider, onLogout, onOpenSupport }) => {
   const [provider, setProvider] = useState<Provider>(initialProvider);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'services' | 'team' | 'profile'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'services' | 'team' | 'settings'>('overview');
   
   // Form states
   const [newEmail, setNewEmail] = useState('');
   const [newServicePrice, setNewServicePrice] = useState<number>(50);
   const [newServiceDescription, setNewServiceDescription] = useState<string>('Standard Service');
   const [newServiceCategory, setNewServiceCategory] = useState<ServiceCategory>(ServiceCategory.CLEANING);
+
+  // Settings State
+  const [profileForm, setProfileForm] = useState({
+      name: initialProvider.name,
+      bio: initialProvider.bio,
+      phone: initialProvider.phone || '',
+      address: initialProvider.address || ''
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [selectedDocType, setSelectedDocType] = useState<'ID' | 'LICENSE' | 'INSURANCE' | 'OTHER'>('ID');
 
   useEffect(() => {
     const refreshData = async () => {
@@ -87,6 +98,36 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
           setNewEmail('');
       } else {
           alert('User not found. Team members must be registered users.');
+      }
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSavingProfile(true);
+      try {
+          const updated = await api.updateProviderProfile(provider.id, profileForm);
+          setProvider(updated);
+          alert('Profile updated successfully');
+      } catch (e) {
+          alert('Failed to update profile');
+      } finally {
+          setIsSavingProfile(false);
+      }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setUploadingDoc(true);
+      try {
+          await api.uploadProviderDocument(provider.id, selectedDocType, file.name);
+          const updated = await api.getProviderById(provider.id);
+          if (updated) setProvider(updated);
+      } catch (e) {
+          alert('Failed to upload document');
+      } finally {
+          setUploadingDoc(false);
       }
   };
 
@@ -191,16 +232,6 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                                     </span>
                                 </div>
                             </div>
-                            {booking.serviceCategory === ServiceCategory.INTERIOR_DESIGN && booking.bookingType === 'CONSULTATION' && booking.status === 'ACCEPTED' && (
-                                <div className="mt-4 flex gap-3">
-                                    <button className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700">
-                                        Offer Full Project
-                                    </button>
-                                    <button className="text-xs border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50">
-                                        Complete Consultation
-                                    </button>
-                                </div>
-                            )}
                         </div>
                     ))
                 )}
@@ -340,6 +371,136 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
       </div>
   );
 
+  const renderSettings = () => (
+      <div className="space-y-6">
+          {/* Profile Details Form */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-gray-900">Edit Profile</h3>
+              </div>
+              <form onSubmit={handleSaveProfile} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Company / Name</label>
+                          <input 
+                              type="text" 
+                              value={profileForm.name} 
+                              onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                      </div>
+                      <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                          <input 
+                              type="text" 
+                              value={profileForm.phone} 
+                              onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                              placeholder="+1 555-0000"
+                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                      </div>
+                  </div>
+                  <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Bio / Description</label>
+                      <textarea 
+                          rows={3}
+                          value={profileForm.bio} 
+                          onChange={(e) => setProfileForm({...profileForm, bio: e.target.value})}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                  </div>
+                  <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                      <input 
+                          type="text" 
+                          value={profileForm.address} 
+                          onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                  </div>
+                  <div className="flex justify-end">
+                      <button 
+                        type="submit" 
+                        disabled={isSavingProfile}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+                      >
+                          <Save size={16} /> {isSavingProfile ? 'Saving...' : 'Save Profile'}
+                      </button>
+                  </div>
+              </form>
+          </div>
+
+          {/* Verification Documents Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        Verification Documents
+                        {provider.verified && <CheckCircle size={20} className="text-green-500" />}
+                    </h3>
+                    <p className="text-sm text-gray-500">Upload ID, Licenses, or Insurance proofs to get verified.</p>
+                  </div>
+              </div>
+
+              {/* Upload Area */}
+              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-6 text-center mb-6">
+                  <div className="flex flex-col items-center">
+                        <Upload className="w-10 h-10 text-gray-400 mb-3" />
+                        <div className="flex items-center gap-4 mb-4">
+                             <select 
+                                value={selectedDocType} 
+                                onChange={(e) => setSelectedDocType(e.target.value as any)}
+                                className="p-2 border border-gray-300 rounded-lg bg-white text-sm"
+                             >
+                                 <option value="ID">Government ID</option>
+                                 <option value="LICENSE">Professional License</option>
+                                 <option value="INSURANCE">Insurance Certificate</option>
+                                 <option value="OTHER">Other</option>
+                             </select>
+                             <label className="cursor-pointer bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium transition-colors">
+                                 Choose File
+                                 <input 
+                                    type="file" 
+                                    className="hidden" 
+                                    onChange={handleFileUpload}
+                                    disabled={uploadingDoc}
+                                 />
+                             </label>
+                        </div>
+                        {uploadingDoc && <p className="text-sm text-indigo-600 animate-pulse">Uploading...</p>}
+                  </div>
+              </div>
+
+              {/* Documents List */}
+              <div className="space-y-3">
+                  {(provider.verificationDocuments || []).map((doc) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                          <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-indigo-50 rounded flex items-center justify-center text-indigo-600">
+                                  <FileText size={20} />
+                              </div>
+                              <div>
+                                  <p className="font-medium text-gray-900 text-sm">{doc.name}</p>
+                                  <p className="text-xs text-gray-500">{doc.type} • {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                              </div>
+                          </div>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                              doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                              'bg-yellow-100 text-yellow-800'
+                          }`}>
+                              {doc.status}
+                          </span>
+                      </div>
+                  ))}
+                  {(provider.verificationDocuments || []).length === 0 && (
+                      <p className="text-gray-500 italic text-sm text-center">No documents uploaded yet.</p>
+                  )}
+              </div>
+          </div>
+      </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       {/* Header */}
@@ -375,7 +536,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
                     { id: 'services', label: 'Services & Pricing', icon: DollarSign },
                     { id: 'team', label: 'My Team', icon: Users },
-                    { id: 'profile', label: 'Settings', icon: Settings },
+                    { id: 'settings', label: 'Settings & Verification', icon: Settings },
                 ].map((tab) => (
                     <button
                         key={tab.id}
@@ -398,7 +559,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
           {activeTab === 'overview' && renderOverview()}
           {activeTab === 'services' && renderServices()}
           {activeTab === 'team' && renderTeam()}
-          {activeTab === 'profile' && <div className="p-12 text-center text-gray-500 bg-white rounded-xl">Profile settings coming soon...</div>}
+          {activeTab === 'settings' && renderSettings()}
       </div>
     </div>
   );

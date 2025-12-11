@@ -34,6 +34,8 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  phone?: string;
+  address?: string;
   adminRole?: AdminRole; // Optional sub-role for admins
   avatar?: string;
   rating?: number; // Customers can now be rated
@@ -54,6 +56,15 @@ export interface TeamMember {
   status: 'ACTIVE' | 'PENDING';
 }
 
+export interface VerificationDocument {
+  id: string;
+  name: string;
+  type: 'ID' | 'LICENSE' | 'INSURANCE' | 'OTHER';
+  url: string; // Mock URL
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  uploadedAt: string;
+}
+
 export interface Provider extends User {
   role: UserRole.PROVIDER;
   // Deprecated single category/rate in favor of services array, kept for backward comp. if needed temporarily
@@ -62,6 +73,7 @@ export interface Provider extends User {
   
   services: ServiceOffering[];
   teamMembers: TeamMember[];
+  verificationDocuments: VerificationDocument[];
   
   rating: number;
   reviewCount: number;

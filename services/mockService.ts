@@ -1,5 +1,5 @@
 
-import { Booking, BookingStatus, Provider, User, UserRole, ServiceCategory, SupportTicket, AdminRole } from '../types';
+import { Booking, BookingStatus, Provider, User, UserRole, ServiceCategory, SupportTicket, AdminRole, VerificationDocument } from '../types';
 import { MOCK_PROVIDERS, COMMISSION_RATE, MOCK_TICKETS, ADMIN_CREDENTIALS } from '../constants';
 
 // Simulating In-Memory Database
@@ -20,13 +20,19 @@ let bookings: Booking[] = [
   }
 ];
 
-let providers = [...MOCK_PROVIDERS];
+let providers: Provider[] = MOCK_PROVIDERS.map(p => ({
+    ...p,
+    verificationDocuments: [], // Initialize with empty docs
+    phone: '555-0123',
+    address: '123 Provider Lane'
+}));
+
 let tickets = [...MOCK_TICKETS];
 
 // Mock Users (Customers) for Admin view
 let customers: User[] = [
-    { id: 'u1', name: 'Alice Johnson', email: 'alice@test.com', role: UserRole.CUSTOMER, rating: 4.8, isBanned: false, avatar: 'https://picsum.photos/200?random=10' },
-    { id: 'u2', name: 'Bob Smith', email: 'bob@test.com', role: UserRole.CUSTOMER, rating: 2.2, isBanned: false, avatar: 'https://picsum.photos/200?random=11' } // Low rating customer
+    { id: 'u1', name: 'Alice Johnson', email: 'alice@test.com', role: UserRole.CUSTOMER, rating: 4.8, isBanned: false, avatar: 'https://picsum.photos/200?random=10', phone: '555-0101', address: '123 Main St, Springfield' },
+    { id: 'u2', name: 'Bob Smith', email: 'bob@test.com', role: UserRole.CUSTOMER, rating: 2.2, isBanned: false, avatar: 'https://picsum.photos/200?random=11', phone: '555-0102', address: '456 Oak Ave, Metropolis' } 
 ];
 
 export const api = {
@@ -67,6 +73,7 @@ export const api = {
                     { category: ServiceCategory.CLEANING, price: 50, description: 'Standard Service' }
                 ],
                 teamMembers: [],
+                verificationDocuments: [],
                 rating: 0,
                 reviewCount: 0,
                 distanceKm: 1,
@@ -89,17 +96,44 @@ export const api = {
         }
 
         // Default Customer Mock
-        resolve({
+        const newCustomer = {
           id: 'u1',
           name: email.split('@')[0],
           email,
           role: UserRole.CUSTOMER,
           avatar: `https://picsum.photos/200/200?random=${Math.floor(Math.random() * 100)}`,
           rating: 5.0,
-          isBanned: false
-        });
+          isBanned: false,
+          phone: '',
+          address: ''
+        };
+        // Add to mock store so updates persist in session
+        customers.push(newCustomer);
+        resolve(newCustomer);
       }, 800);
     });
+  },
+
+  updateUser: async (userId: string, updates: Partial<User>): Promise<User> => {
+      return new Promise((resolve) => {
+          setTimeout(() => {
+              const customerIndex = customers.findIndex(c => c.id === userId);
+              if (customerIndex !== -1) {
+                  customers[customerIndex] = { ...customers[customerIndex], ...updates };
+                  resolve(customers[customerIndex]);
+                  return;
+              }
+              // If not found in customers, might be provider (Providers are Users too)
+              const providerIndex = providers.findIndex(p => p.id === userId);
+              if (providerIndex !== -1) {
+                  // Type assertion needed as providers array is typed Provider[]
+                  providers[providerIndex] = { ...providers[providerIndex], ...updates } as Provider;
+                  resolve(providers[providerIndex]);
+                  return;
+              }
+              throw new Error("User not found");
+          }, 500);
+      });
   },
 
   searchProviders: async (
@@ -180,6 +214,29 @@ export const api = {
                 throw new Error("Provider not found");
             }
           }, 300);
+      });
+  },
+
+  uploadProviderDocument: async (providerId: string, docType: 'ID' | 'LICENSE' | 'INSURANCE' | 'OTHER', fileName: string): Promise<VerificationDocument> => {
+      return new Promise(resolve => {
+          setTimeout(() => {
+            const index = providers.findIndex(p => p.id === providerId);
+            if (index !== -1) {
+                const newDoc: VerificationDocument = {
+                    id: `doc-${Date.now()}`,
+                    name: fileName,
+                    type: docType,
+                    url: '#', // Mock URL
+                    status: 'PENDING',
+                    uploadedAt: new Date().toISOString()
+                };
+                providers[index] = {
+                    ...providers[index],
+                    verificationDocuments: [...(providers[index].verificationDocuments || []), newDoc]
+                };
+                resolve(newDoc);
+            }
+          }, 800);
       });
   },
 

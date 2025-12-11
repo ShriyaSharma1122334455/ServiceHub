@@ -1,4 +1,5 @@
 
+
 import { ServiceCategory, Provider, UserRole, SupportTicket, AdminRole } from './types';
 
 export const SERVICE_ICONS: Record<ServiceCategory, string> = {
@@ -66,6 +67,7 @@ export const MOCK_PROVIDERS: Provider[] = [
       { category: ServiceCategory.CLEANING, price: 30, description: 'Standard home cleaning' }
     ],
     teamMembers: [],
+    verificationDocuments: [],
     rating: 4.8,
     reviewCount: 124,
     distanceKm: 2.5,
@@ -88,6 +90,7 @@ export const MOCK_PROVIDERS: Provider[] = [
     teamMembers: [
         { id: 'tm1', name: 'Jimmy', email: 'jimmy@plumb.com', status: 'ACTIVE', avatar: 'https://via.placeholder.com/150' }
     ],
+    verificationDocuments: [],
     rating: 4.9,
     reviewCount: 89,
     distanceKm: 4.2,
@@ -109,6 +112,7 @@ export const MOCK_PROVIDERS: Provider[] = [
         { category: ServiceCategory.INTERIOR_DESIGN, price: 50, description: 'Initial Consultation' } // Lower price for consultation
     ],
     teamMembers: [],
+    verificationDocuments: [],
     rating: 5.0,
     reviewCount: 42,
     distanceKm: 8.1,
@@ -129,6 +133,7 @@ export const MOCK_PROVIDERS: Provider[] = [
         { category: ServiceCategory.ELECTRICAL, price: 75, description: 'Residential wiring' }
     ],
     teamMembers: [],
+    verificationDocuments: [],
     rating: 4.6,
     reviewCount: 215,
     distanceKm: 1.2,
@@ -152,6 +157,7 @@ export const MOCK_PROVIDERS: Provider[] = [
         { id: 'tm2', name: 'Alice', email: 'alice@cm.com', status: 'ACTIVE' },
         { id: 'tm3', name: 'Bob', email: 'bob@cm.com', status: 'ACTIVE' }
     ],
+    verificationDocuments: [],
     rating: 2.5, // Low rating to demonstrate ban warning
     reviewCount: 15,
     distanceKm: 12.5,
@@ -172,6 +178,7 @@ export const MOCK_PROVIDERS: Provider[] = [
         { category: ServiceCategory.CLEANING, price: 40, description: 'Standard cleaning' }
     ],
     teamMembers: [],
+    verificationDocuments: [],
     rating: 4.5,
     reviewCount: 10,
     distanceKm: 3.0,

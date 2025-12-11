@@ -12,6 +12,7 @@ import { MyBookings } from './pages/MyBookings';
 import { ProviderDashboard } from './pages/ProviderDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SupportModal } from './components/SupportModal';
+import { CustomerProfile } from './pages/CustomerProfile';
 
 // Simple HashRouter implementation to satisfy constraint 5
 const Router = ({ 
@@ -97,6 +98,11 @@ const App = () => {
     '/bookings': (
         user && user.role === UserRole.CUSTOMER
         ? <MyBookings userId={user.id} />
+        : <Login onLogin={handleLogin} onRegisterClick={() => navigate('/register')} />
+    ),
+    '/profile': (
+        user && user.role === UserRole.CUSTOMER
+        ? <CustomerProfile user={user} />
         : <Login onLogin={handleLogin} onRegisterClick={() => navigate('/register')} />
     ),
     '/dashboard': (

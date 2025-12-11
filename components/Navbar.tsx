@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserRole } from '../types';
-import { Menu, X, User as UserIcon, LogOut, LayoutDashboard, Search, CalendarCheck, HelpCircle } from 'lucide-react';
+import { Menu, X, User as UserIcon, LogOut, LayoutDashboard, Search, CalendarCheck, HelpCircle, Settings } from 'lucide-react';
 
 interface NavbarProps {
   user: { name: string; role: UserRole; avatar?: string } | null;
@@ -79,9 +79,22 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                     <span className="text-sm font-medium text-gray-900">{user.name}</span>
                     <span className="text-xs text-gray-500 capitalize">{user.role.toLowerCase()}</span>
                   </div>
+                  
+                  {/* Dropdown for user actions could go here, for now adding direct buttons */}
+                  {user.role === UserRole.CUSTOMER && (
+                      <button 
+                        onClick={() => onNavigate('/profile')}
+                        className="ml-2 p-1 text-gray-400 hover:text-indigo-600 transition-colors"
+                        title="My Profile"
+                      >
+                        <Settings size={18} />
+                      </button>
+                  )}
+
                   <button 
                     onClick={onLogout}
-                    className="ml-2 p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    className="ml-1 p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Sign Out"
                   >
                     <LogOut size={18} />
                   </button>
@@ -141,6 +154,14 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                 onClick={() => { onNavigate('/bookings'); setIsOpen(false); }}
               >
                 My Bookings
+              </div>
+            )}
+            {user && user.role === UserRole.CUSTOMER && (
+              <div 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                onClick={() => { onNavigate('/profile'); setIsOpen(false); }}
+              >
+                 <Settings size={16} /> My Profile
               </div>
             )}
             {user && (
