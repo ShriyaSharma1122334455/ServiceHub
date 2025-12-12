@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { UserRole } from '../types';
 import { Lock, Mail, ShieldAlert } from 'lucide-react';
@@ -37,9 +38,11 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
     <div className="min-h-[calc(100vh-100px)] flex flex-col justify-center items-center py-12 px-4">
       <div className="w-full max-w-md">
         
-        <div className="text-center mb-8">
-            <div className="h-14 w-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center mx-auto shadow-xl mb-6">
-                <span className="text-white font-bold text-2xl">S</span>
+        <div className="text-center mb-10">
+            <div className="flex justify-center mb-8 transform hover:scale-105 transition-transform duration-500">
+                <div className="h-16 w-16 bg-gradient-to-br from-slate-900 to-slate-700 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-3xl tracking-tighter">S</span>
+                </div>
             </div>
             <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             Welcome back

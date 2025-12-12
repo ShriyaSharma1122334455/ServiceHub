@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Provider, Booking, ServiceCategory, ServiceOffering } from '../types';
+import { Provider, Booking, ServiceCategory, ServiceOffering, BookingStatus } from '../types';
 import { api } from '../services/mockService';
 import { 
     LayoutDashboard, Users, Settings, DollarSign, 
-    AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save, BarChart3, TrendingUp, UserCheck
+    AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save, BarChart3, TrendingUp, X
 } from 'lucide-react';
 
 interface ProviderDashboardProps {
@@ -18,6 +18,9 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   const [analytics, setAnalytics] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'services' | 'team' | 'settings'>('overview');
   
+  // Processing state for individual bookings
+  const [processingBookingId, setProcessingBookingId] = useState<string | null>(null);
+
   // Form states
   const [newEmail, setNewEmail] = useState('');
   const [newServicePrice, setNewServicePrice] = useState<number>(50);
@@ -58,6 +61,22 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
       const newStatus = provider.availabilityStatus === 'AVAILABLE' ? 'OFF_DUTY' : 'AVAILABLE';
       const updated = await api.updateProviderProfile(provider.id, { availabilityStatus: newStatus });
       setProvider(updated);
+  };
+
+  const handleBookingAction = async (bookingId: string, action: 'ACCEPT' | 'DECLINE') => {
+      setProcessingBookingId(bookingId);
+      try {
+          const newStatus = action === 'ACCEPT' ? BookingStatus.ACCEPTED : BookingStatus.CANCELLED;
+          await api.updateBookingStatus(bookingId, newStatus);
+          
+          setBookings(prev => prev.map(b => 
+              b.id === bookingId ? { ...b, status: newStatus } : b
+          ));
+      } catch (error) {
+          console.error("Action failed", error);
+      } finally {
+          setProcessingBookingId(null);
+      }
   };
 
   const handleAddService = async () => {
@@ -207,36 +226,73 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
             </div>
         </div>
 
-        {/* Recent Bookings List */}
+        {/* Bookings List with Accept/Decline Logic */}
         <div className="glass-panel rounded-[2.5rem] overflow-hidden p-0">
-            <div className="px-8 py-6 border-b border-white/40 bg-white/30 backdrop-blur-md">
-                <h3 className="font-bold text-slate-900 text-lg">Incoming Requests</h3>
+            <div className="px-8 py-6 border-b border-white/40 bg-white/30 backdrop-blur-md flex justify-between items-center">
+                <h3 className="font-bold text-slate-900 text-lg">Incoming Requests & Schedule</h3>
+                <span className="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    {bookings.filter(b => b.status === BookingStatus.REQUESTED).length} Pending
+                </span>
             </div>
             <div className="divide-y divide-white/60">
                 {bookings.length === 0 ? (
                     <div className="p-12 text-center text-slate-400 font-medium">No bookings yet.</div>
                 ) : (
-                    bookings.slice(0, 5).map(booking => (
-                        <div key={booking.id} className="p-6 hover:bg-white/40 transition-colors">
-                            <div className="flex items-center justify-between">
+                    // Sort: REQUESTED first, then date
+                    [...bookings].sort((a, b) => {
+                        if (a.status === BookingStatus.REQUESTED && b.status !== BookingStatus.REQUESTED) return -1;
+                        if (a.status !== BookingStatus.REQUESTED && b.status === BookingStatus.REQUESTED) return 1;
+                        return new Date(a.date).getTime() - new Date(b.date).getTime();
+                    }).slice(0, 8).map(booking => (
+                        <div key={booking.id} className={`p-6 transition-colors ${booking.status === BookingStatus.REQUESTED ? 'bg-amber-50/40 hover:bg-amber-50/60' : 'hover:bg-white/40'}`}>
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
                                     <div className="flex items-center gap-3">
                                         <h4 className="font-bold text-slate-800 text-lg">{booking.serviceCategory}</h4>
                                         {booking.bookingType === 'CONSULTATION' && (
                                             <span className="px-2.5 py-1 bg-purple-50 border border-purple-100 text-purple-700 text-[10px] rounded-lg font-bold uppercase tracking-wide">Consultation</span>
                                         )}
+                                        {booking.status === BookingStatus.REQUESTED && (
+                                            <span className="animate-pulse px-2 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded-md uppercase tracking-wider">New Request</span>
+                                        )}
                                     </div>
                                     <p className="text-sm text-slate-500 mt-1 font-medium">
                                         {new Date(booking.date).toLocaleDateString()} at {booking.time} • {booking.durationHours} hrs
                                     </p>
                                 </div>
-                                <div className="text-right">
+                                
+                                <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
                                     <div className="font-bold text-slate-900 text-xl tracking-tight">${booking.totalPrice.toFixed(2)}</div>
-                                    <span className={`inline-block mt-1 text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${
-                                        booking.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-sky-50 text-sky-700 border-sky-100'
-                                    }`}>
-                                        {booking.status}
-                                    </span>
+                                    
+                                    {booking.status === BookingStatus.REQUESTED ? (
+                                        <div className="flex items-center gap-3">
+                                            <button 
+                                                onClick={() => handleBookingAction(booking.id, 'DECLINE')}
+                                                disabled={processingBookingId === booking.id}
+                                                className="p-3 rounded-full border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 transition-all disabled:opacity-50"
+                                                title="Decline"
+                                            >
+                                                <X size={20} strokeWidth={2.5} />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleBookingAction(booking.id, 'ACCEPT')}
+                                                disabled={processingBookingId === booking.id}
+                                                className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-full font-bold text-sm hover:bg-emerald-600 hover:scale-105 shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50"
+                                            >
+                                                {processingBookingId === booking.id ? '...' : 'Accept'} 
+                                                <CheckCircle size={18} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <span className={`inline-block text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${
+                                            booking.status === BookingStatus.COMPLETED ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
+                                            booking.status === BookingStatus.ACCEPTED ? 'bg-sky-50 text-sky-700 border-sky-100' :
+                                            booking.status === BookingStatus.CANCELLED ? 'bg-red-50 text-red-700 border-red-100' :
+                                            'bg-slate-100 text-slate-500'
+                                        }`}>
+                                            {booking.status}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -1,14 +1,38 @@
+
 import React from 'react';
-import { ServiceCategory } from '../types';
+import { ServiceCategory, User, Provider, UserRole } from '../types';
 import { SERVICE_ICONS } from '../constants';
 import { ShieldCheck, Zap, Clock, Star, ArrowRight } from 'lucide-react';
 
 interface HomeProps {
   onNavigate: (path: string) => void;
-  isLoggedIn: boolean;
+  user: User | Provider | null;
 }
 
-export const Home: React.FC<HomeProps> = ({ onNavigate, isLoggedIn }) => {
+export const Home: React.FC<HomeProps> = ({ onNavigate, user }) => {
+  const isLoggedIn = !!user;
+
+  const handleHeroAction = () => {
+      if (!isLoggedIn) {
+          onNavigate('/register');
+          return;
+      }
+      if (user?.role === UserRole.ADMIN) {
+          onNavigate('/admin');
+      } else if (user?.role === UserRole.PROVIDER) {
+          onNavigate('/dashboard');
+      } else {
+          onNavigate('/search');
+      }
+  };
+
+  const getButtonText = () => {
+      if (!isLoggedIn) return 'Get Started Free';
+      if (user?.role === UserRole.ADMIN) return 'Go to Dashboard';
+      if (user?.role === UserRole.PROVIDER) return 'Go to Dashboard';
+      return 'Find a Professional';
+  };
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-100px)]">
       {/* Hero Section */}
@@ -30,10 +54,10 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, isLoggedIn }) => {
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button 
-              onClick={() => onNavigate(isLoggedIn ? '/search' : '/register')}
+              onClick={handleHeroAction}
               className="bg-slate-900 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-slate-900/20 hover:bg-slate-800 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
-              {isLoggedIn ? 'Find a Professional' : 'Get Started Free'}
+              {getButtonText()}
               <ArrowRight size={20} />
             </button>
             {!isLoggedIn && (
@@ -114,8 +138,8 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, isLoggedIn }) => {
       {/* Footer */}
       <footer className="mt-auto py-12 border-t border-slate-200/50">
           <div className="max-w-7xl mx-auto px-4 text-center">
-            <div className="flex justify-center mb-6">
-                 <div className="h-10 w-10 bg-slate-200 rounded-xl flex items-center justify-center text-slate-400">
+            <div className="flex justify-center mb-6 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                <div className="h-10 w-10 bg-slate-200 rounded-xl flex items-center justify-center text-slate-400">
                     <span className="font-bold text-xl">S</span>
                 </div>
             </div>

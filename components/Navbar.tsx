@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { UserRole } from '../types';
-import { Menu, X, HelpCircle, Settings, LogOut, CalendarCheck } from 'lucide-react';
+import { Menu, X, HelpCircle, Settings, LogOut, CalendarCheck, LayoutDashboard } from 'lucide-react';
 
 interface NavbarProps {
   user: { name: string; role: UserRole; avatar?: string } | null;
@@ -46,6 +47,18 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                  Services
                </span>
               )}
+              {/* ADMIN DASHBOARD LINK */}
+              {user && user.role === UserRole.ADMIN && (
+                 <span onClick={() => onNavigate('/admin')} className={navItemClass('/admin')}>
+                 Dashboard
+               </span>
+              )}
+              {/* PROVIDER DASHBOARD LINK */}
+              {user && user.role === UserRole.PROVIDER && (
+                 <span onClick={() => onNavigate('/dashboard')} className={navItemClass('/dashboard')}>
+                 Dashboard
+               </span>
+              )}
             </div>
           </div>
 
@@ -74,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                   <div className="relative group cursor-pointer flex items-center gap-3" onClick={() => user.role === UserRole.CUSTOMER && onNavigate('/profile')}>
                      <div className="text-right">
                         <div className="text-sm font-bold text-slate-900 leading-tight">{user.name}</div>
-                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{user.role === 'CUSTOMER' ? 'Member' : 'Pro'}</div>
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{user.role === 'CUSTOMER' ? 'Member' : user.role === 'ADMIN' ? 'Admin' : 'Pro'}</div>
                      </div>
                     <img 
                         src={user.avatar || "https://via.placeholder.com/32"} 
@@ -91,6 +104,17 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                             title="Settings"
                           >
                             <Settings size={20} className="stroke-[2]" />
+                          </button>
+                      )}
+                      
+                      {/* Dashboard Icon Shortcut for Admin/Provider */}
+                      {(user.role === UserRole.ADMIN || user.role === UserRole.PROVIDER) && (
+                          <button 
+                            onClick={() => onNavigate(user.role === UserRole.ADMIN ? '/admin' : '/dashboard')}
+                            className="p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                            title="Dashboard"
+                          >
+                            <LayoutDashboard size={20} className="stroke-[2]" />
                           </button>
                       )}
 
@@ -152,12 +176,33 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                Browse Services
              </div>
             )}
+            
+            {/* Admin Dashboard Mobile Link */}
+            {user && user.role === UserRole.ADMIN && (
+               <div 
+               className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
+               onClick={() => { onNavigate('/admin'); setIsOpen(false); }}
+             >
+               Admin Dashboard
+             </div>
+            )}
+
+            {/* Provider Dashboard Mobile Link */}
+            {user && user.role === UserRole.PROVIDER && (
+               <div 
+               className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
+               onClick={() => { onNavigate('/dashboard'); setIsOpen(false); }}
+             >
+               Provider Dashboard
+             </div>
+            )}
+
             {user && (
               <div 
                 className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
                 onClick={() => { onNavigate('/bookings'); setIsOpen(false); }}
               >
-                My Bookings
+                {user.role === UserRole.CUSTOMER ? 'My Bookings' : 'Schedule'}
               </div>
             )}
             {user && user.role === UserRole.CUSTOMER && (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Provider, BookingStatus, ServiceCategory, ServiceOffering } from '../types';
 import { api } from '../services/mockService';
-import { ArrowLeft, Clock, Calendar, DollarSign, CheckCircle, Info, CreditCard, Lock, Zap, ChevronRight, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, DollarSign, CheckCircle, Info, CreditCard, Lock, Zap, ChevronRight, ShieldCheck, Ruler, Home, PenTool, Wrench } from 'lucide-react';
 import { COMMISSION_RATE } from '../constants';
 
 interface BookingPageProps {
@@ -21,6 +21,9 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
   const [duration, setDuration] = useState<number>(2);
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<number>(0);
   
+  // Dynamic Specifications State
+  const [specifications, setSpecifications] = useState<Record<string, any>>({});
+
   // Pricing State
   const [multiplier, setMultiplier] = useState(1.0);
   const [checkingPrice, setCheckingPrice] = useState(false);
@@ -80,6 +83,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
       }
   };
 
+  const handleSpecChange = (key: string, value: any) => {
+      setSpecifications(prev => ({ ...prev, [key]: value }));
+  };
+
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -93,7 +100,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
             date,
             time,
             durationHours: duration,
-            totalPrice: total
+            totalPrice: total,
+            specifications: specifications // Pass specifications to backend (mock)
         });
         setStep('success');
     } catch (error) {
@@ -103,10 +111,263 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
     }
   };
 
-  // Card formatting
   const handleCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const v = e.target.value.replace(/\D/g, '').substring(0, 16);
       setCardNumber(v.replace(/(\d{4})/g, '$1 ').trim());
+  };
+
+  // --- Dynamic Fields Renderer ---
+  const renderServiceSpecifications = () => {
+      const category = activeService.category;
+
+      switch (category) {
+          case ServiceCategory.CLEANING:
+              return (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Cleaning Area Type</label>
+                              <div className="relative">
+                                  <select 
+                                      className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                      onChange={(e) => handleSpecChange('cleaningAreaType', e.target.value)}
+                                  >
+                                      <option value="">Select Area</option>
+                                      <option value="Full House">Full House</option>
+                                      <option value="Kitchen">Kitchen</option>
+                                      <option value="Bedroom">Bedroom</option>
+                                      <option value="Bathroom">Bathroom</option>
+                                      <option value="Living Room">Living Room</option>
+                                      <option value="Office">Office</option>
+                                  </select>
+                                  <Home className="absolute right-4 top-4 h-5 w-5 text-slate-400 pointer-events-none" />
+                              </div>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Size (sq. meters)</label>
+                              <div className="relative">
+                                  <input 
+                                      type="number" 
+                                      placeholder="e.g. 80"
+                                      className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none"
+                                      onChange={(e) => handleSpecChange('areaSize', e.target.value)}
+                                  />
+                                  <Ruler className="absolute right-4 top-4 h-5 w-5 text-slate-400 pointer-events-none" />
+                              </div>
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Number of Rooms</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('numRooms', e.target.value)}
+                              >
+                                  {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
+                                      <option key={num} value={num}>{num} Room{num > 1 ? 's' : ''}</option>
+                                  ))}
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Hours Required</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  value={duration}
+                                  onChange={(e) => {
+                                      const val = Number(e.target.value);
+                                      setDuration(val);
+                                      handleSpecChange('cleaningHours', val);
+                                  }}
+                              >
+                                  {Array.from({ length: 12 }, (_, i) => i + 1).map(num => (
+                                      <option key={num} value={num}>{num} Hour{num > 1 ? 's' : ''}</option>
+                                  ))}
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+              );
+
+          case ServiceCategory.PLUMBING:
+              return (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Issue Type</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('issueType', e.target.value)}
+                              >
+                                  <option value="">Select Issue</option>
+                                  <option value="Leakage">Leakage</option>
+                                  <option value="Pipe Installation">Pipe Installation</option>
+                                  <option value="Drain Clogging">Drain Clogging</option>
+                                  <option value="Bathroom Fitting">Bathroom Fitting</option>
+                                  <option value="Kitchen Sink Repair">Kitchen Sink Repair</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Urgency Level</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('urgency', e.target.value)}
+                              >
+                                  <option value="Normal">Normal</option>
+                                  <option value="Urgent">Urgent</option>
+                                  <option value="Emergency">Emergency</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Material Required</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('material', e.target.value)}
+                              >
+                                  <option value="Don't Know">Don't Know</option>
+                                  <option value="PVC">PVC</option>
+                                  <option value="Copper">Copper</option>
+                                  <option value="Steel">Steel</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Area of Work</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('areaOfWork', e.target.value)}
+                              >
+                                  <option value="Bathroom">Bathroom</option>
+                                  <option value="Kitchen">Kitchen</option>
+                                  <option value="Outdoor">Outdoor</option>
+                                  <option value="Whole House">Whole House</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+              );
+
+          case ServiceCategory.ELECTRICAL:
+              return (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Service Type</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('serviceType', e.target.value)}
+                              >
+                                  <option value="">Select Service</option>
+                                  <option value="Wiring">Wiring</option>
+                                  <option value="Switch Repair">Switch Repair</option>
+                                  <option value="Fan Installation">Fan Installation</option>
+                                  <option value="Appliance Repair">Appliance Repair</option>
+                                  <option value="Light Fixture">Light Fixture Installation</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Power Load</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('powerLoad', e.target.value)}
+                              >
+                                  <option value="Low">Low (Residential)</option>
+                                  <option value="Medium">Medium</option>
+                                  <option value="High">High (Industrial/Heavy)</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Visit Type</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('visitType', e.target.value)}
+                              >
+                                  <option value="Repair">Repair</option>
+                                  <option value="Installation">Installation</option>
+                                  <option value="Inspection Only">Inspection Only</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Environment</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('environment', e.target.value)}
+                              >
+                                  <option value="Indoor">Indoor Work</option>
+                                  <option value="Outdoor">Outdoor Work</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+              );
+
+          case ServiceCategory.INTERIOR_DESIGN:
+              return (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Project Type</label>
+                              <div className="relative">
+                                  <select 
+                                      className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                      onChange={(e) => handleSpecChange('projectType', e.target.value)}
+                                  >
+                                      <option value="">Select Project</option>
+                                      <option value="Full Home">Full Home</option>
+                                      <option value="Room Renovation">Room Renovation</option>
+                                      <option value="Office Design">Office Design</option>
+                                      <option value="Kitchen Remodel">Kitchen Remodel</option>
+                                      <option value="Bathroom Remodel">Bathroom Remodel</option>
+                                  </select>
+                                  <PenTool className="absolute right-4 top-4 h-5 w-5 text-slate-400 pointer-events-none" />
+                              </div>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Total Area (sq. ft)</label>
+                              <input 
+                                  type="number" 
+                                  placeholder="e.g. 1200"
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none"
+                                  onChange={(e) => handleSpecChange('areaSqFt', e.target.value)}
+                              />
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Design Style</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('designStyle', e.target.value)}
+                              >
+                                  <option value="Modern">Modern</option>
+                                  <option value="Minimal">Minimal</option>
+                                  <option value="Luxury">Luxury</option>
+                                  <option value="Traditional">Traditional</option>
+                                  <option value="Scandinavian">Scandinavian</option>
+                                  <option value="Industrial">Industrial</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Budget Range</label>
+                              <select 
+                                  className="glass-input w-full p-4 rounded-2xl font-bold text-slate-800 outline-none appearance-none"
+                                  onChange={(e) => handleSpecChange('budget', e.target.value)}
+                              >
+                                  <option value="< $5,000">&lt; $5,000</option>
+                                  <option value="$5,000 - $10,000">$5,000 - $10,000</option>
+                                  <option value="$10,000 - $20,000">$10,000 - $20,000</option>
+                                  <option value="$20,000+">$20,000+</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+              );
+
+          default:
+              return null;
+      }
   };
 
   if (step === 'success') {
@@ -184,6 +445,14 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                                 <span>{date || 'Select Date'}</span>
                             </div>
                             
+                            {/* Display a key spec in summary if available */}
+                            {specifications.issueType && (
+                                <div className="flex items-center justify-between text-slate-200 font-medium text-sm">
+                                    <span className="flex items-center gap-2 opacity-80"><Wrench size={16}/> Issue</span>
+                                    <span>{specifications.issueType}</span>
+                                </div>
+                            )}
+                            
                             {multiplier > 1.0 && (
                                 <div className="mt-2 pt-3 border-t border-white/10 flex items-center justify-between text-amber-300 font-bold text-xs animate-pulse">
                                     <span className="flex items-center gap-2"><Zap size={14} fill="currentColor" /> Peak Hours</span>
@@ -219,7 +488,13 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                             <p className="text-slate-500 mb-8 font-medium">Select your preferences to generate a quote.</p>
 
                             <form onSubmit={handleContinue} className="space-y-8">
-                                {isInteriorDesign && (
+                                
+                                {/* Dynamic Specification Fields */}
+                                {renderServiceSpecifications()}
+
+                                {isInteriorDesign && !specifications.projectType && (
+                                    /* Hide generic service tier if dynamic fields cover it, or keep it. 
+                                       Here we keep it for ID to allow Consultation vs Full Project choice */
                                     <div>
                                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Service Tier</label>
                                          <div className="relative">
@@ -285,23 +560,26 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Duration (Hours)</label>
-                                    <div className="flex items-center gap-4">
-                                        <input 
-                                            type="range" 
-                                            min="1" 
-                                            max="8" 
-                                            step="1"
-                                            value={duration}
-                                            onChange={(e) => setDuration(Number(e.target.value))}
-                                            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
-                                        />
-                                        <div className="w-24 text-center font-bold text-xl text-slate-900 glass-panel py-2 rounded-xl">
-                                            {duration} hr{duration > 1 ? 's' : ''}
+                                {/* Generic Duration Slider (Only if NOT Cleaning, as cleaning uses a dropdown above) */}
+                                {activeService.category !== ServiceCategory.CLEANING && (
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 ml-1">Duration (Hours)</label>
+                                        <div className="flex items-center gap-4">
+                                            <input 
+                                                type="range" 
+                                                min="1" 
+                                                max="8" 
+                                                step="1"
+                                                value={duration}
+                                                onChange={(e) => setDuration(Number(e.target.value))}
+                                                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
+                                            />
+                                            <div className="w-24 text-center font-bold text-xl text-slate-900 glass-panel py-2 rounded-xl">
+                                                {duration} hr{duration > 1 ? 's' : ''}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                                 
                                 {isConsultation && (
                                     <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex gap-4 text-blue-900 text-sm font-medium">

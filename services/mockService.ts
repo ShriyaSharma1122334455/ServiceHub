@@ -182,10 +182,30 @@ export const api = {
               time: '14:00',
               durationHours: 1,
               totalPrice: 85,
-              status: BookingStatus.ACCEPTED,
+              status: BookingStatus.REQUESTED,
               createdAt: '2023-01-05'
+          },
+          {
+              id: 'b3',
+              customerId: 'u3',
+              providerId: 'p2',
+              providerName: 'Mike Ross',
+              serviceCategory: ServiceCategory.PLUMBING,
+              bookingType: 'STANDARD',
+              date: new Date(now.setDate(now.getDate() + 1)).toISOString(),
+              time: '09:00',
+              durationHours: 2,
+              totalPrice: 170,
+              status: BookingStatus.ACCEPTED,
+              createdAt: '2023-01-06'
           }
       ];
+  },
+
+  updateBookingStatus: async (bookingId: string, status: BookingStatus): Promise<void> => {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return;
   },
 
   // --- ANALYTICS (Data Visualization Support) ---

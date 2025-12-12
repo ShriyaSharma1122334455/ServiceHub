@@ -77,13 +77,13 @@ const App = () => {
   };
 
   const routes: Record<string, React.ReactNode> = {
-    '/': <Home onNavigate={navigate} isLoggedIn={!!user} />,
+    '/': <Home onNavigate={navigate} user={user} />,
     '/login': <Login onLogin={handleLogin} onRegisterClick={() => navigate('/register')} />,
     '/register': <Register onRegister={handleLogin} onLoginClick={() => navigate('/login')} />,
     '/search': (
       user && user.role === UserRole.CUSTOMER 
         ? <ProviderSearch onBook={handleBookProvider} /> 
-        : <Home onNavigate={navigate} isLoggedIn={!!user} /> // Protected
+        : <Home onNavigate={navigate} user={user} /> // Protected
     ),
     '/book': (
         user && selectedProvider 
@@ -93,7 +93,7 @@ const App = () => {
             onCancel={() => navigate('/search')}
             onSuccess={() => navigate('/bookings')}
           />
-        : <Home onNavigate={navigate} isLoggedIn={!!user} />
+        : <Home onNavigate={navigate} user={user} />
     ),
     '/bookings': (
         user && user.role === UserRole.CUSTOMER
