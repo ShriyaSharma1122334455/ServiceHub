@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { UserRole } from '../types';
 import { Lock, Mail, ShieldAlert } from 'lucide-react';
@@ -35,32 +34,33 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="h-14 w-14 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl rotate-3 hover:rotate-0 transition-all duration-500">
-            <span className="text-white font-bold text-3xl">S</span>
+    <div className="min-h-[calc(100vh-100px)] flex flex-col justify-center items-center py-12 px-4">
+      <div className="w-full max-w-md">
+        
+        <div className="text-center mb-8">
+            <div className="h-14 w-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center mx-auto shadow-xl mb-6">
+                <span className="text-white font-bold text-2xl">S</span>
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Welcome back
+            </h2>
+            <p className="mt-2 text-slate-500 font-medium">
+            Don't have an account?{' '}
+            <button onClick={onRegisterClick} className="font-bold text-slate-900 hover:underline transition-all">
+                Sign up
+            </button>
+            </p>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 drop-shadow-sm">
-          Welcome Back
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <button onClick={onRegisterClick} className="font-bold text-teal-700 hover:text-teal-900 underline decoration-teal-500/30 hover:decoration-teal-500">
-            create a new account
-          </button>
-        </p>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white/40 backdrop-blur-xl py-8 px-4 shadow-2xl rounded-3xl border border-white/50 sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="glass-panel py-8 px-6 sm:px-10 rounded-[2.5rem]">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-gray-700 ml-1 mb-1">
-                Email address
+              <label htmlFor="email" className="block text-xs font-bold text-slate-500 uppercase tracking-wide ml-3 mb-2">
+                Email Address
               </label>
-              <div className="mt-1 relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-500" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   id="email"
@@ -69,19 +69,19 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 sm:text-sm bg-white/60 border-gray-200/60 rounded-xl py-3 border focus:ring-2 focus:ring-teal-500 focus:border-transparent focus:bg-white/90 transition-all placeholder-gray-400"
-                  placeholder="you@example.com"
+                  className="glass-input block w-full pl-11 pr-4 py-4 rounded-2xl text-sm font-medium text-slate-900 placeholder-slate-400 focus:ring-0 focus:border-slate-300"
+                  placeholder="name@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-gray-700 ml-1 mb-1">
+              <label htmlFor="password" className="block text-xs font-bold text-slate-500 uppercase tracking-wide ml-3 mb-2">
                 Password
               </label>
-              <div className="mt-1 relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-500" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   id="password"
@@ -90,72 +90,67 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 sm:text-sm bg-white/60 border-gray-200/60 rounded-xl py-3 border focus:ring-2 focus:ring-teal-500 focus:border-transparent focus:bg-white/90 transition-all"
+                  className="glass-input block w-full pl-11 pr-4 py-4 rounded-2xl text-sm font-medium text-slate-900 placeholder-slate-400 focus:ring-0 focus:border-slate-300"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transform hover:-translate-y-0.5 transition-all"
+                className="w-full flex justify-center py-4 px-4 rounded-full shadow-lg text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all hover:scale-[1.02]"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </div>
           </form>
 
-          <div className="mt-8">
-             <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300/50" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-transparent text-gray-500 font-medium bg-white/50 backdrop-blur rounded-full">Demo Credentials</span>
-                </div>
+          {/* Demo Controls */}
+          <div className="mt-8 pt-6 border-t border-slate-200/60">
+             <div className="flex justify-center mb-6">
+                 <span className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-bold text-slate-400 uppercase tracking-wider">Demo Access</span>
              </div>
              
-             <div className="mt-6 flex flex-col gap-3">
-                <div className="flex gap-2">
+             <div className="flex flex-col gap-3">
+                <div className="flex gap-3">
                     <button 
                         type="button"
                         onClick={() => fillCredential('demo@customer.com', '123456', 'USER')}
-                        className={`flex-1 text-center text-xs p-2.5 rounded-xl border transition-all duration-300 font-bold ${!isAdminMode ? 'bg-teal-50/80 border-teal-200 text-teal-800 shadow-sm' : 'bg-white/40 border-gray-200 text-gray-600 hover:bg-white/60'}`}
+                        className={`flex-1 py-3 rounded-xl border font-bold text-xs transition-all ${!isAdminMode ? 'bg-teal-50 border-teal-200 text-teal-800' : 'bg-white/40 border-slate-200 text-slate-500 hover:bg-white/60'}`}
                     >
                         Customer
                     </button>
                     <button 
                         type="button"
                         onClick={() => fillCredential('demo@provider.com', '123456', 'USER')}
-                        className={`flex-1 text-center text-xs p-2.5 rounded-xl border transition-all duration-300 font-bold ${!isAdminMode ? 'bg-teal-50/80 border-teal-200 text-teal-800 shadow-sm' : 'bg-white/40 border-gray-200 text-gray-600 hover:bg-white/60'}`}
+                        className={`flex-1 py-3 rounded-xl border font-bold text-xs transition-all ${!isAdminMode ? 'bg-teal-50 border-teal-200 text-teal-800' : 'bg-white/40 border-slate-200 text-slate-500 hover:bg-white/60'}`}
                     >
                         Provider
                     </button>
                 </div>
 
-                <div className="relative mt-2">
-                    <button 
-                        type="button"
-                        onClick={() => setIsAdminMode(!isAdminMode)}
-                        className="w-full flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-gray-900 py-1 font-medium transition-colors"
-                    >
-                        <ShieldAlert size={14} />
-                        {isAdminMode ? 'Hide Admin Credentials' : 'Show Admin Credentials'}
-                    </button>
-                </div>
+                <button 
+                    type="button"
+                    onClick={() => setIsAdminMode(!isAdminMode)}
+                    className="flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-slate-600 py-2 font-medium transition-colors"
+                >
+                    <ShieldAlert size={14} />
+                    {isAdminMode ? 'Hide Admin Access' : 'Admin Access'}
+                </button>
 
                 {isAdminMode && (
-                    <div className="grid grid-cols-2 gap-2 bg-gray-50/50 p-3 rounded-xl border border-gray-200/50 backdrop-blur-sm">
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50/50 p-2 rounded-xl border border-slate-200/50">
                         {ADMIN_CREDENTIALS.map((cred, idx) => (
                             <button 
                                 key={idx}
                                 type="button"
                                 onClick={() => fillCredential(cred.email, cred.password, 'ADMIN')}
-                                className="text-left text-[10px] p-2.5 bg-white/80 border border-gray-200/50 rounded-lg hover:border-teal-400 hover:shadow-md transition-all shadow-sm"
+                                className="text-left p-3 bg-white border border-slate-200/50 rounded-lg hover:border-slate-300 hover:shadow-sm transition-all"
                             >
-                                <div className="font-bold text-gray-800 truncate">{cred.name}</div>
-                                <div className="text-gray-500 truncate">{cred.email}</div>
+                                <div className="font-bold text-slate-800 text-xs truncate">{cred.name}</div>
+                                <div className="text-[10px] text-slate-400 truncate">{cred.email}</div>
                             </button>
                         ))}
                     </div>

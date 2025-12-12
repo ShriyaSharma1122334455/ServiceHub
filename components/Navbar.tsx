@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { UserRole } from '../types';
-import { Menu, X, User as UserIcon, LogOut, LayoutDashboard, Search, CalendarCheck, HelpCircle, Settings } from 'lucide-react';
+import { Menu, X, HelpCircle, Settings, LogOut, CalendarCheck } from 'lucide-react';
 
 interface NavbarProps {
   user: { name: string; role: UserRole; avatar?: string } | null;
@@ -15,104 +14,107 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
   const [isOpen, setIsOpen] = useState(false);
 
   const navItemClass = (path: string) => `
-    px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-300
+    px-5 py-2.5 rounded-full text-sm font-semibold cursor-pointer transition-all duration-300
     ${currentPath === path 
-      ? 'bg-teal-500/10 text-teal-800 shadow-inner' 
-      : 'text-gray-600 hover:bg-white/40 hover:text-teal-700 hover:shadow-sm'}
+      ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10' 
+      : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'}
   `;
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-white/20 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
+    <nav className="sticky top-4 z-50 px-4 mb-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="glass-panel rounded-full px-6 h-16 sm:h-20 flex items-center justify-between">
+          
+          {/* Logo Section */}
+          <div className="flex items-center gap-8">
             <div 
-              className="flex-shrink-0 flex items-center cursor-pointer group"
+              className="flex-shrink-0 flex items-center cursor-pointer group gap-2.5"
               onClick={() => onNavigate('/')}
             >
-              <div className="h-9 w-9 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center mr-2 shadow-lg group-hover:scale-105 transition-transform">
-                <span className="text-white font-bold text-xl drop-shadow-sm">S</span>
+              <div className="h-10 w-10 bg-gradient-to-br from-slate-900 to-slate-700 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300">
+                <span className="text-white font-bold text-xl tracking-tighter">S</span>
               </div>
-              <span className="font-bold text-xl text-gray-800 tracking-tight">ServiceHub</span>
+              <span className="font-bold text-xl text-slate-900 tracking-tight hidden md:block">ServiceHub</span>
             </div>
             
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
+            <div className="hidden md:flex items-center space-x-1">
               <span onClick={() => onNavigate('/')} className={navItemClass('/')}>
                 Home
               </span>
               {user && user.role === UserRole.CUSTOMER && (
                  <span onClick={() => onNavigate('/search')} className={navItemClass('/search')}>
-                 Find Services
+                 Services
                </span>
               )}
             </div>
           </div>
 
-          <div className="hidden sm:flex sm:items-center">
+          {/* Right Actions */}
+          <div className="hidden md:flex items-center">
             {user ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-3">
                  <button 
                     onClick={onOpenSupport}
-                    className="p-2 text-gray-500 hover:text-teal-700 hover:bg-white/50 rounded-full transition-all flex items-center gap-1"
-                    title="Support & Help"
+                    className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
+                    title="Support"
                  >
-                    <HelpCircle size={20} />
-                    <span className="text-sm font-medium hidden lg:inline">Support</span>
+                    <HelpCircle size={20} className="stroke-[2]" />
                  </button>
                  
                  {user.role === UserRole.CUSTOMER && (
                     <span onClick={() => onNavigate('/bookings')} className={navItemClass('/bookings')}>
-                        <div className="flex items-center gap-1">
-                        <CalendarCheck size={16} />
-                        <span>My Bookings</span>
+                        <div className="flex items-center gap-2">
+                        <CalendarCheck size={18} />
+                        <span>Bookings</span>
                         </div>
                     </span>
                  )}
 
-                <div className="flex items-center gap-2 pl-4 border-l border-gray-300/50">
-                  <div className="relative">
+                <div className="flex items-center gap-3 pl-4 border-l border-slate-200/60 ml-2">
+                  <div className="relative group cursor-pointer flex items-center gap-3" onClick={() => user.role === UserRole.CUSTOMER && onNavigate('/profile')}>
+                     <div className="text-right">
+                        <div className="text-sm font-bold text-slate-900 leading-tight">{user.name}</div>
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{user.role === 'CUSTOMER' ? 'Member' : 'Pro'}</div>
+                     </div>
                     <img 
                         src={user.avatar || "https://via.placeholder.com/32"} 
                         alt="Avatar" 
-                        className="h-9 w-9 rounded-full border-2 border-white shadow-md"
+                        className="h-10 w-10 rounded-full border-2 border-white shadow-sm object-cover"
                     />
-                    <div className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-400 border-2 border-white rounded-full"></div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-gray-800">{user.name}</span>
-                    <span className="text-[10px] text-teal-600 font-semibold uppercase tracking-wider">{user.role.toLowerCase()}</span>
-                  </div>
-                  
-                  {user.role === UserRole.CUSTOMER && (
-                      <button 
-                        onClick={() => onNavigate('/profile')}
-                        className="ml-2 p-2 text-gray-500 hover:text-teal-600 hover:bg-white/50 rounded-full transition-all"
-                        title="My Profile"
-                      >
-                        <Settings size={18} />
-                      </button>
-                  )}
 
-                  <button 
-                    onClick={onLogout}
-                    className="ml-1 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50/50 rounded-full transition-all"
-                    title="Sign Out"
-                  >
-                    <LogOut size={18} />
-                  </button>
+                  <div className="flex gap-1">
+                      {user.role === UserRole.CUSTOMER && (
+                          <button 
+                            onClick={() => onNavigate('/profile')}
+                            className="p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                            title="Settings"
+                          >
+                            <Settings size={20} className="stroke-[2]" />
+                          </button>
+                      )}
+
+                      <button 
+                        onClick={onLogout}
+                        className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
+                        title="Sign Out"
+                      >
+                        <LogOut size={20} className="stroke-[2]" />
+                      </button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-2">
                 <button 
                   onClick={() => onNavigate('/login')}
-                  className="text-gray-600 hover:text-teal-700 hover:bg-white/40 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                  className="text-slate-600 hover:text-slate-900 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:bg-slate-100"
                 >
                   Log In
                 </button>
                 <button 
                   onClick={() => onNavigate('/register')}
-                  className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 shadow-md border border-white/20"
+                  className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-slate-800 hover:scale-105 transition-all shadow-lg shadow-slate-900/20"
                 >
                   Get Started
                 </button>
@@ -121,10 +123,10 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center sm:hidden">
+          <div className="flex items-center md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-white/50"
+              className="inline-flex items-center justify-center p-2 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -134,25 +136,25 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="sm:hidden bg-white/90 backdrop-blur-xl border-t border-white/20 absolute w-full shadow-lg">
-          <div className="pt-2 pb-3 space-y-1 px-4">
+        <div className="md:hidden mt-2 glass-panel rounded-3xl overflow-hidden p-2 absolute left-4 right-4 shadow-xl z-50">
+          <div className="space-y-1">
             <div 
-              className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
+              className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
               onClick={() => { onNavigate('/'); setIsOpen(false); }}
             >
               Home
             </div>
             {user && user.role === UserRole.CUSTOMER && (
                <div 
-               className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
+               className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
                onClick={() => { onNavigate('/search'); setIsOpen(false); }}
              >
-               Find Services
+               Browse Services
              </div>
             )}
             {user && (
               <div 
-                className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
+                className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
                 onClick={() => { onNavigate('/bookings'); setIsOpen(false); }}
               >
                 My Bookings
@@ -160,44 +162,38 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
             )}
             {user && user.role === UserRole.CUSTOMER && (
               <div 
-                className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50 flex items-center gap-2"
+                className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                 onClick={() => { onNavigate('/profile'); setIsOpen(false); }}
               >
-                 <Settings size={16} /> My Profile
+                 Profile Settings
               </div>
             )}
-            {user && (
-                <div 
-                    className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50 flex items-center gap-2"
-                    onClick={() => { onOpenSupport(); setIsOpen(false); }}
-                >
-                    <HelpCircle size={16} /> Support & Help
-                </div>
-            )}
-            {!user && (
+            
+            <div className="h-px bg-slate-200 my-2"></div>
+
+            {!user ? (
               <>
                 <div 
-                  className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
+                  className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
                   onClick={() => { onNavigate('/login'); setIsOpen(false); }}
                 >
                   Log In
                 </div>
                 <div 
-                  className="block px-3 py-3 rounded-lg text-base font-medium text-teal-600 hover:bg-teal-50/50"
+                  className="block px-4 py-3 rounded-2xl text-base font-semibold text-teal-600 hover:bg-teal-50"
                   onClick={() => { onNavigate('/register'); setIsOpen(false); }}
                 >
-                  Sign Up
+                  Create Account
                 </div>
               </>
-            )}
-             {user && (
-               <div 
-                  className="block px-3 py-3 rounded-lg text-base font-medium text-red-600 hover:bg-red-50/50"
+            ) : (
+                <div 
+                  className="block px-4 py-3 rounded-2xl text-base font-semibold text-red-600 hover:bg-red-50"
                   onClick={() => { onLogout(); setIsOpen(false); }}
                 >
                   Sign Out
                 </div>
-             )}
+            )}
           </div>
         </div>
       )}

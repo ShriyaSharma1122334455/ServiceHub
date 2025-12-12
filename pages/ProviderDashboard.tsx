@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Provider, Booking, ServiceCategory, ServiceOffering } from '../types';
 import { api } from '../services/mockService';
@@ -131,17 +130,17 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
 
   const getStatusBadge = (status: string) => {
       const colors: Record<string, string> = {
-          'AVAILABLE': 'bg-green-100/60 text-green-800 border-green-200',
-          'BUSY': 'bg-yellow-100/60 text-yellow-800 border-yellow-200',
-          'OFF_DUTY': 'bg-gray-100/60 text-gray-800 border-gray-200'
+          'AVAILABLE': 'bg-emerald-100/50 text-emerald-800 border-emerald-200/50',
+          'BUSY': 'bg-amber-100/50 text-amber-800 border-amber-200/50',
+          'OFF_DUTY': 'bg-slate-100/50 text-slate-600 border-slate-200/50'
       };
-      return colors[status] || 'bg-gray-100';
+      return colors[status] || 'bg-slate-100';
   };
 
-  // Glass Card Base Class
-  const glassCard = "bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:bg-white/70";
+  const glassCard = "glass-panel rounded-[2.5rem] p-8 transition-all duration-300";
 
-  // Render Functions
+  // --- Render Widgets ---
+
   const renderOverview = () => (
     <div className="space-y-6">
         {/* Stats Grid */}
@@ -149,85 +148,88 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
             <div className={glassCard}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Total Earnings</p>
-                        <p className="text-3xl font-extrabold text-gray-900 mt-1">$1,240.50</p>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Earnings</p>
+                        <p className="text-4xl font-bold text-slate-900 mt-3 tracking-tight">$1,240.50</p>
                     </div>
-                    <div className="p-4 bg-teal-100/50 text-teal-700 rounded-xl shadow-inner">
-                        <DollarSign size={24} />
+                    <div className="p-4 bg-teal-50 rounded-2xl text-teal-600 border border-teal-100">
+                        <DollarSign size={28} strokeWidth={1.5} />
                     </div>
                 </div>
             </div>
             <div className={glassCard}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Rating</p>
-                        <p className="text-3xl font-extrabold text-gray-900 mt-1">{provider.rating?.toFixed(1) || '0.0'} <span className="text-sm text-gray-400 font-normal">/ 5.0</span></p>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg. Rating</p>
+                        <div className="flex items-baseline gap-2 mt-3">
+                            <p className="text-4xl font-bold text-slate-900 tracking-tight">{provider.rating?.toFixed(1) || '0.0'}</p>
+                            <span className="text-sm font-bold text-slate-400">/ 5.0</span>
+                        </div>
                     </div>
-                    <div className={`p-4 rounded-xl shadow-inner ${provider.rating < 3 ? 'bg-red-100/50 text-red-600' : 'bg-amber-100/50 text-amber-600'}`}>
-                        <AlertTriangle size={24} />
+                    <div className={`p-4 rounded-2xl border ${provider.rating < 3 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-amber-50 text-amber-500 border-amber-100'}`}>
+                        <AlertTriangle size={28} strokeWidth={1.5} />
                     </div>
                 </div>
                 {provider.rating > 0 && provider.rating < 3.5 && (
-                    <p className="mt-3 text-xs text-red-600 font-bold bg-red-50 px-2 py-1 rounded-lg w-fit">Warning: Low rating</p>
+                    <p className="mt-4 text-xs text-red-600 font-bold bg-red-50/50 px-3 py-1.5 rounded-lg w-fit">Action Required: Low rating</p>
                 )}
                 {provider.isBanned && (
-                    <div className="mt-2 p-2 bg-red-100 text-red-800 text-sm rounded border border-red-200 text-center font-bold">
-                        ACCOUNT BANNED
+                    <div className="mt-3 p-2 bg-red-100 text-red-800 text-xs rounded-lg border border-red-200 text-center font-bold">
+                        ACCOUNT SUSPENDED
                     </div>
                 )}
             </div>
             <div className={glassCard}>
                  <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Status</p>
-                        <span className={`inline-block px-3 py-1 text-sm font-bold rounded-full mt-2 border ${getStatusBadge(provider.availabilityStatus || 'OFF_DUTY')}`}>
-                            {(provider.availabilityStatus || 'OFF_DUTY').replace('_', ' ')}
-                        </span>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Current Status</p>
+                        <div className="mt-3">
+                             <span className={`inline-block px-4 py-1.5 text-xs font-bold rounded-full border ${getStatusBadge(provider.availabilityStatus || 'OFF_DUTY')}`}>
+                                {(provider.availabilityStatus || 'OFF_DUTY').replace('_', ' ')}
+                            </span>
+                        </div>
                     </div>
                     <button 
                         onClick={handleStatusToggle}
                         disabled={provider.availabilityStatus === 'BUSY'}
-                        className={`p-4 rounded-xl transition-all shadow-sm ${
+                        className={`p-4 rounded-2xl transition-all shadow-sm border ${
                             provider.availabilityStatus === 'BUSY' 
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white hover:scale-105 active:scale-95'
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200'
+                            : 'bg-white hover:scale-105 active:scale-95 border-slate-100'
                         }`}
-                        title="Toggle Availability"
                     >
-                        <Power className={`w-6 h-6 ${provider.availabilityStatus === 'OFF_DUTY' ? 'text-gray-400' : 'text-green-500'}`} />
+                        <Power className={`w-7 h-7 ${provider.availabilityStatus === 'OFF_DUTY' ? 'text-slate-300' : 'text-emerald-500'}`} strokeWidth={2} />
                     </button>
                 </div>
-                {provider.availabilityStatus === 'BUSY' && <p className="text-xs text-gray-500 mt-2">Cannot change status while busy.</p>}
             </div>
         </div>
 
-        {/* Recent Bookings */}
-        <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-white/50 overflow-hidden">
-            <div className="px-6 py-5 border-b border-white/20 bg-white/20">
-                <h3 className="font-bold text-gray-900 text-lg">Recent Requests</h3>
+        {/* Recent Bookings List */}
+        <div className="glass-panel rounded-[2.5rem] overflow-hidden p-0">
+            <div className="px-8 py-6 border-b border-white/40 bg-white/30 backdrop-blur-md">
+                <h3 className="font-bold text-slate-900 text-lg">Incoming Requests</h3>
             </div>
-            <div className="divide-y divide-white/40">
+            <div className="divide-y divide-white/60">
                 {bookings.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No bookings yet.</div>
+                    <div className="p-12 text-center text-slate-400 font-medium">No bookings yet.</div>
                 ) : (
                     bookings.slice(0, 5).map(booking => (
                         <div key={booking.id} className="p-6 hover:bg-white/40 transition-colors">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="flex items-center gap-3">
-                                        <h4 className="font-bold text-gray-800">{booking.serviceCategory}</h4>
+                                        <h4 className="font-bold text-slate-800 text-lg">{booking.serviceCategory}</h4>
                                         {booking.bookingType === 'CONSULTATION' && (
-                                            <span className="px-2 py-0.5 bg-purple-100/60 border border-purple-200 text-purple-800 text-xs rounded-lg font-medium">Consultation</span>
+                                            <span className="px-2.5 py-1 bg-purple-50 border border-purple-100 text-purple-700 text-[10px] rounded-lg font-bold uppercase tracking-wide">Consultation</span>
                                         )}
                                     </div>
-                                    <p className="text-sm text-gray-500 mt-1 font-medium">
+                                    <p className="text-sm text-slate-500 mt-1 font-medium">
                                         {new Date(booking.date).toLocaleDateString()} at {booking.time} • {booking.durationHours} hrs
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-bold text-gray-900 text-lg">${booking.totalPrice.toFixed(2)}</div>
-                                    <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-                                        booking.status === 'COMPLETED' ? 'bg-green-100/60 text-green-800 border-green-200' : 'bg-teal-100/60 text-teal-800 border-teal-200'
+                                    <div className="font-bold text-slate-900 text-xl tracking-tight">${booking.totalPrice.toFixed(2)}</div>
+                                    <span className={`inline-block mt-1 text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${
+                                        booking.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-sky-50 text-sky-700 border-sky-100'
                                     }`}>
                                         {booking.status}
                                     </span>
@@ -243,79 +245,81 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
 
   const renderServices = () => (
       <div className={glassCard}>
-          <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-gray-900">My Services & Pricing</h3>
+          <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Service Menu</h3>
           </div>
           
-          <div className="grid gap-4 mb-8">
+          <div className="grid gap-4 mb-10">
               {(provider.services || []).map((service, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-white/40 border border-white/50 rounded-xl">
-                      <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-teal-100/50 rounded-xl flex items-center justify-center text-2xl shadow-sm">
-                                {service.category[0]}
+                  <div key={index} className="flex items-center justify-between p-6 bg-white/40 border border-white/60 rounded-3xl transition-all hover:bg-white/60">
+                      <div className="flex items-center gap-5">
+                          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-slate-100">
+                                {service.category === 'Cleaning' ? '✨' : service.category === 'Plumbing' ? '🔧' : '🛠️'}
                           </div>
                           <div>
-                              <h4 className="font-bold text-gray-900">{service.category}</h4>
-                              <p className="text-sm text-gray-500">{service.description}</p>
+                              <h4 className="font-bold text-slate-900 text-lg">{service.category}</h4>
+                              <p className="text-sm text-slate-500 font-medium">{service.description}</p>
                           </div>
                       </div>
                       <div className="flex items-center gap-4">
-                          <span className="font-bold text-gray-900 bg-white/50 px-3 py-1 rounded-lg border border-white/50">${service.price}/hr</span>
+                          <span className="font-bold text-slate-900 bg-white/60 px-5 py-2.5 rounded-xl border border-white/60">${service.price}/hr</span>
                           <button 
                             onClick={() => handleRemoveService(index)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                           >
-                              <Trash2 size={18} />
+                              <Trash2 size={20} className="stroke-[2]" />
                           </button>
                       </div>
                   </div>
               ))}
               {(provider.services || []).length === 0 && (
-                  <p className="text-gray-500 italic">No services listed.</p>
+                  <p className="text-slate-400 italic font-medium py-4 text-center">No services listed yet.</p>
               )}
           </div>
 
-          <div className="bg-gray-50/50 p-6 rounded-xl border border-dashed border-gray-300">
-              <h4 className="font-bold text-gray-900 mb-4">Add New Service</h4>
-              <div className="flex flex-col gap-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-slate-50/50 p-8 rounded-3xl border border-dashed border-slate-300">
+              <h4 className="font-bold text-slate-900 mb-6">Add New Service</h4>
+              <div className="flex flex-col gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Service Type</label>
-                        <select 
-                            className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
-                            value={newServiceCategory}
-                            onChange={(e) => setNewServiceCategory(e.target.value as ServiceCategory)}
-                        >
-                            {Object.values(ServiceCategory).map(s => (
-                                <option key={s} value={s}>{s}</option>
-                            ))}
-                        </select>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Service Type</label>
+                        <div className="relative">
+                            <select 
+                                className="glass-input w-full p-3.5 rounded-xl font-medium outline-none appearance-none"
+                                value={newServiceCategory}
+                                onChange={(e) => setNewServiceCategory(e.target.value as ServiceCategory)}
+                            >
+                                {Object.values(ServiceCategory).map(s => (
+                                    <option key={s} value={s}>{s}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Description</label>
                         <input 
                             type="text" 
                             placeholder="e.g. Initial Consultation"
                             value={newServiceDescription}
                             onChange={(e) => setNewServiceDescription(e.target.value)}
-                            className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                            className="glass-input w-full p-3.5 rounded-xl font-medium outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Price / Hr</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Price / Hr</label>
                         <input 
                             type="number" 
                             value={newServicePrice}
                             onChange={(e) => setNewServicePrice(Number(e.target.value))}
-                            className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                            className="glass-input w-full p-3.5 rounded-xl font-medium outline-none"
                         />
                     </div>
                   </div>
                   <button 
                     onClick={handleAddService}
-                    className="self-end bg-teal-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-teal-700 flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
+                    className="self-end bg-slate-900 text-white px-8 py-3.5 rounded-full font-bold text-sm hover:bg-slate-800 flex items-center gap-2 shadow-lg transition-all"
                   >
-                      <Plus size={18} /> Add Service
+                      <Plus size={18} strokeWidth={2.5} /> Add Service
                   </button>
               </div>
           </div>
@@ -324,47 +328,50 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
 
   const renderTeam = () => (
       <div className={glassCard}>
-           <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-gray-900">Team Management</h3>
-              <span className="text-sm font-medium bg-gray-100 px-2 py-1 rounded-lg">{(provider.teamMembers || []).length} Members</span>
+           <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team</h3>
+              <span className="text-xs font-bold bg-slate-200/50 px-4 py-1.5 rounded-full text-slate-600 uppercase tracking-wide">{(provider.teamMembers || []).length} Members</span>
           </div>
 
           <div className="space-y-4 mb-8">
               {(provider.teamMembers || []).map(member => (
-                  <div key={member.id} className="flex items-center justify-between p-4 bg-white/40 border border-white/50 rounded-xl">
-                      <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold border-2 border-white shadow-sm">
+                  <div key={member.id} className="flex items-center justify-between p-5 bg-white/40 border border-white/60 rounded-3xl">
+                      <div className="flex items-center gap-5">
+                          <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold border-2 border-white shadow-sm text-lg">
                               {member.name[0]}
                           </div>
                           <div>
-                              <p className="font-bold text-gray-900">{member.name}</p>
-                              <p className="text-sm text-gray-500">{member.email}</p>
+                              <p className="font-bold text-slate-900 text-lg">{member.name}</p>
+                              <p className="text-sm text-slate-500 font-medium">{member.email}</p>
                           </div>
                       </div>
-                      <span className={`px-3 py-1 text-xs font-bold rounded-full border ${member.status === 'ACTIVE' ? 'bg-green-100/60 text-green-800 border-green-200' : 'bg-yellow-100/60 text-yellow-800 border-yellow-200'}`}>
+                      <span className={`px-4 py-1.5 text-xs font-bold rounded-full border uppercase tracking-wider ${member.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'}`}>
                           {member.status}
                       </span>
                   </div>
               ))}
               {(provider.teamMembers || []).length === 0 && (
-                  <p className="text-gray-500 italic text-center py-4">Working solo? Add team members to handle more jobs.</p>
+                  <div className="text-center py-10 bg-slate-50/30 rounded-3xl border border-dashed border-slate-200">
+                    <p className="text-slate-400 font-medium">No team members yet.</p>
+                  </div>
               )}
           </div>
 
-          <form onSubmit={handleAddTeamMember} className="border-t border-gray-200/50 pt-6">
-              <h4 className="font-bold text-gray-900 mb-2">Invite Team Member</h4>
-              <p className="text-sm text-gray-500 mb-4">They must have a registered account on ServiceHub.</p>
-              <div className="flex gap-3">
-                  <input 
-                    type="email" 
-                    placeholder="Enter email address"
-                    required
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    className="flex-1 p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
-                  />
-                  <button type="submit" className="bg-teal-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-teal-700 shadow-md">
-                      Invite
+          <form onSubmit={handleAddTeamMember} className="border-t border-slate-200/60 pt-8">
+              <div className="flex flex-col md:flex-row gap-4 items-end">
+                  <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Invite via Email</label>
+                    <input 
+                        type="email" 
+                        placeholder="colleague@example.com"
+                        required
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        className="glass-input w-full px-5 py-3.5 rounded-xl font-medium outline-none"
+                    />
+                  </div>
+                  <button type="submit" className="w-full md:w-auto bg-slate-900 text-white px-8 py-3.5 rounded-full font-bold text-sm hover:bg-slate-800 shadow-md transition-all">
+                      Send Invite
                   </button>
               </div>
           </form>
@@ -375,56 +382,56 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
       <div className="space-y-6">
           {/* Profile Details Form */}
           <div className={glassCard}>
-              <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-bold text-gray-900">Edit Profile</h3>
+              <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Profile Settings</h3>
               </div>
-              <form onSubmit={handleSaveProfile} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                          <label className="block text-sm font-bold text-gray-700 mb-1">Company / Name</label>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Company / Name</label>
                           <input 
                               type="text" 
                               value={profileForm.name} 
                               onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                              className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                              className="glass-input w-full px-5 py-3.5 rounded-xl font-medium outline-none"
                           />
                       </div>
                       <div>
-                          <label className="block text-sm font-bold text-gray-700 mb-1">Phone</label>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Phone</label>
                           <input 
                               type="text" 
                               value={profileForm.phone} 
                               onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
                               placeholder="+1 555-0000"
-                              className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                              className="glass-input w-full px-5 py-3.5 rounded-xl font-medium outline-none"
                           />
                       </div>
                   </div>
                   <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-1">Bio / Description</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Bio</label>
                       <textarea 
                           rows={3}
                           value={profileForm.bio} 
                           onChange={(e) => setProfileForm({...profileForm, bio: e.target.value})}
-                          className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                          className="glass-input w-full px-5 py-3.5 rounded-xl font-medium outline-none resize-none"
                       />
                   </div>
                   <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-1">Address</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Location</label>
                       <input 
                           type="text" 
                           value={profileForm.address} 
                           onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
-                          className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                          className="glass-input w-full px-5 py-3.5 rounded-xl font-medium outline-none"
                       />
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-4">
                       <button 
                         type="submit" 
                         disabled={isSavingProfile}
-                        className="bg-teal-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-teal-700 flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
+                        className="bg-slate-900 text-white px-8 py-3.5 rounded-full font-bold text-sm hover:bg-slate-800 flex items-center gap-2 shadow-lg transition-all"
                       >
-                          <Save size={18} /> {isSavingProfile ? 'Saving...' : 'Save Profile'}
+                          <Save size={18} /> {isSavingProfile ? 'Saving...' : 'Save Changes'}
                       </button>
                   </div>
               </form>
@@ -434,30 +441,31 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
           <div className={glassCard}>
               <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                        Verification Documents
-                        {provider.verified && <CheckCircle size={20} className="text-green-500" />}
+                    <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        Verification
+                        {provider.verified && <CheckCircle size={20} className="text-blue-500 fill-blue-50" />}
                     </h3>
-                    <p className="text-sm text-gray-500">Upload ID, Licenses, or Insurance proofs to get verified.</p>
+                    <p className="text-sm text-slate-500 font-medium mt-1">Required to appear in search results.</p>
                   </div>
               </div>
 
               {/* Upload Area */}
-              <div className="bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center mb-6">
+              <div className="bg-slate-50/50 border-2 border-dashed border-slate-300 rounded-[2rem] p-8 text-center mb-6 transition-colors hover:bg-slate-50">
                   <div className="flex flex-col items-center">
-                        <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
-                             <select 
-                                value={selectedDocType} 
-                                onChange={(e) => setSelectedDocType(e.target.value as any)}
-                                className="p-2.5 border border-gray-300 rounded-xl bg-white text-sm outline-none focus:ring-2 focus:ring-teal-500"
-                             >
-                                 <option value="ID">Government ID</option>
-                                 <option value="LICENSE">Professional License</option>
-                                 <option value="INSURANCE">Insurance Certificate</option>
-                                 <option value="OTHER">Other</option>
-                             </select>
-                             <label className="cursor-pointer bg-teal-600 text-white px-5 py-2.5 rounded-xl hover:bg-teal-700 text-sm font-medium transition-colors shadow-md">
+                        <Upload className="w-10 h-10 text-slate-300 mb-4" strokeWidth={1.5} />
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                             <div className="relative">
+                                <select 
+                                    value={selectedDocType} 
+                                    onChange={(e) => setSelectedDocType(e.target.value as any)}
+                                    className="p-3 border border-slate-200 rounded-xl bg-white text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-slate-900 appearance-none pr-8 cursor-pointer"
+                                >
+                                    <option value="ID">Government ID</option>
+                                    <option value="LICENSE">License</option>
+                                    <option value="INSURANCE">Insurance</option>
+                                </select>
+                             </div>
+                             <label className="cursor-pointer bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-full hover:bg-slate-50 text-sm font-bold transition-all shadow-sm">
                                  Choose File
                                  <input 
                                     type="file" 
@@ -467,34 +475,34 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                                  />
                              </label>
                         </div>
-                        {uploadingDoc && <p className="text-sm text-teal-600 animate-pulse font-medium">Uploading...</p>}
+                        {uploadingDoc && <p className="text-sm text-teal-600 animate-pulse font-bold mt-2">Uploading...</p>}
                   </div>
               </div>
 
               {/* Documents List */}
               <div className="space-y-3">
                   {(provider.verificationDocuments || []).map((doc) => (
-                      <div key={doc.id} className="flex items-center justify-between p-4 bg-white/40 border border-white/50 rounded-xl">
+                      <div key={doc.id} className="flex items-center justify-between p-4 bg-white/40 border border-white/60 rounded-2xl">
                           <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600">
-                                  <FileText size={20} />
+                              <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500">
+                                  <FileText size={20} strokeWidth={1.5} />
                               </div>
                               <div>
-                                  <p className="font-bold text-gray-900 text-sm">{doc.name}</p>
-                                  <p className="text-xs text-gray-500 font-medium">{doc.type} • {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                                  <p className="font-bold text-slate-900 text-sm">{doc.name}</p>
+                                  <p className="text-xs text-slate-500 font-medium">{doc.type}</p>
                               </div>
                           </div>
-                          <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
-                              doc.status === 'APPROVED' ? 'bg-green-100/60 text-green-800 border-green-200' :
-                              doc.status === 'REJECTED' ? 'bg-red-100/60 text-red-800 border-red-200' :
-                              'bg-yellow-100/60 text-yellow-800 border-yellow-200'
+                          <span className={`px-3 py-1 text-[10px] font-bold rounded-full border uppercase tracking-wider ${
+                              doc.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                              doc.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-100' :
+                              'bg-amber-50 text-amber-700 border-amber-100'
                           }`}>
                               {doc.status}
                           </span>
                       </div>
                   ))}
                   {(provider.verificationDocuments || []).length === 0 && (
-                      <p className="text-gray-500 italic text-sm text-center">No documents uploaded yet.</p>
+                      <p className="text-slate-400 italic text-sm text-center font-medium">No documents uploaded.</p>
                   )}
               </div>
           </div>
@@ -502,52 +510,52 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   );
 
   return (
-    <div className="min-h-screen pb-12">
+    <div className="min-h-screen pb-20">
       {/* Header */}
-      <div className="bg-white/60 backdrop-blur-lg border-b border-white/20 mb-8 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-panel border-x-0 border-t-0 rounded-none mb-10 sticky top-[80px] z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                    <img src={provider.avatar} alt="" className="w-20 h-20 rounded-2xl border-4 border-white shadow-md object-cover" />
+                    <img src={provider.avatar} alt="" className="w-16 h-16 rounded-2xl border-2 border-white shadow-md object-cover" />
                     <div>
-                        <h1 className="text-3xl font-extrabold text-gray-900">Welcome, {provider.name}</h1>
-                        <p className="text-gray-500 font-medium flex items-center gap-2 mt-1">
+                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Hello, {provider.name}</h1>
+                        <p className="text-slate-500 font-medium flex items-center gap-2 mt-0.5 text-sm">
                             {provider.serviceCategory} Professional 
-                            {provider.verified && <CheckCircle size={18} className="text-blue-500 fill-white" />}
+                            {provider.verified && <CheckCircle size={16} className="text-blue-500 fill-blue-50" />}
                         </p>
                     </div>
                 </div>
                 <div className="flex gap-3">
                     <button 
                         onClick={onOpenSupport}
-                        className="px-5 py-2.5 bg-white/50 border border-teal-200 text-teal-800 rounded-xl hover:bg-teal-50/50 flex items-center gap-2 font-medium transition-all"
+                        className="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-full hover:bg-slate-50 flex items-center gap-2 font-bold text-sm transition-all shadow-sm"
                     >
-                        <MessageCircle size={18} /> Raise Request
+                        <MessageCircle size={18} /> Get Help
                     </button>
-                    <button onClick={onLogout} className="px-5 py-2.5 bg-white/50 border border-red-200 text-red-700 rounded-xl hover:bg-red-50/50 font-medium transition-all">
-                        Logout
+                    <button onClick={onLogout} className="px-5 py-2.5 bg-white border border-slate-200 text-red-600 rounded-full hover:bg-red-50 font-bold text-sm transition-all shadow-sm">
+                        Log Out
                     </button>
                 </div>
             </div>
             
             {/* Tabs */}
-            <div className="flex gap-8 mt-10 overflow-x-auto border-b border-gray-200/50">
+            <div className="flex gap-1 mt-8 overflow-x-auto pb-1">
                 {[
                     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-                    { id: 'services', label: 'Services & Pricing', icon: DollarSign },
-                    { id: 'team', label: 'My Team', icon: Users },
-                    { id: 'settings', label: 'Settings & Verification', icon: Settings },
+                    { id: 'services', label: 'Services', icon: DollarSign },
+                    { id: 'team', label: 'Team', icon: Users },
+                    { id: 'settings', label: 'Settings', icon: Settings },
                 ].map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`flex items-center gap-2 pb-4 px-2 border-b-[3px] transition-all whitespace-nowrap font-medium text-sm ${
+                        className={`flex items-center gap-2 py-2.5 px-5 rounded-full transition-all whitespace-nowrap font-bold text-sm ${
                             activeTab === tab.id 
-                            ? 'border-teal-600 text-teal-700' 
-                            : 'border-transparent text-gray-500 hover:text-gray-800'
+                            ? 'bg-slate-900 text-white shadow-lg' 
+                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                         }`}
                     >
-                        <tab.icon size={18} className={activeTab === tab.id ? 'stroke-[2.5px]' : ''} />
+                        <tab.icon size={16} strokeWidth={2.5} />
                         {tab.label}
                     </button>
                 ))}
