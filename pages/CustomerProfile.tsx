@@ -19,21 +19,20 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
   const [isSaving, setIsSaving] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    // Validate phone: allow only digits up to 10
-    if (name === "phone") {
-      if (!/^\d{0,10}$/.test(value)) return; 
-    }
+  // Validate phone: allow only digits up to 10
+  if (name === "phone") {
+    if (!/^\d{0,10}$/.test(value)) return; 
+  }
 
-    // Validate name: don't allow less than 3 chars *after user starts typing*
-    if (name === "name") {
-      if (value.length > 0 && value.length < 3) {
-        // Still allow typing but you can show an error later
-      }
+  // Validate name: don't allow less than 3 chars *after user starts typing*
+  if (name === "name") {
+    if (value.length > 0 && value.length < 3) {
+      // Still allow typing but you can show an error later
     }
-    
-    setFormData(prev => ({ ...prev, [name]: value }));
+  }
+  setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,7 +56,7 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
         
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             {/* Header / Banner */}
-            <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+            <div className="h-32 bg-gradient-to-r from-teal-600 to-emerald-600"></div>
             
             <div className="px-8 pb-8">
                 <div className="relative flex justify-between items-end -mt-12 mb-6">
@@ -67,14 +66,14 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
                             alt={user.name} 
                             className="w-24 h-24 rounded-full border-4 border-white shadow-md bg-white"
                         />
-                        <button className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow border border-gray-200 text-gray-600 hover:text-indigo-600">
+                        <button className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow border border-gray-200 text-gray-600 hover:text-teal-600">
                             <Camera size={14} />
                         </button>
                     </div>
                     {!isEditing && (
                         <button 
                             onClick={() => setIsEditing(true)}
-                            className="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors"
+                            className="bg-teal-50 text-teal-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-100 transition-colors"
                         >
                             Edit Profile
                         </button>
@@ -97,7 +96,7 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
                                     disabled={!isEditing}
                                     className={`pl-10 block w-full rounded-lg sm:text-sm ${
                                         isEditing 
-                                        ? 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 border p-2.5' 
+                                        ? 'border-gray-300 focus:ring-teal-500 focus:border-teal-500 border p-2.5' 
                                         : 'bg-transparent border-transparent p-0 font-medium text-gray-900'
                                     }`}
                                 />
@@ -134,7 +133,7 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
                                     placeholder="+1 (555) 000-0000"
                                     className={`pl-10 block w-full rounded-lg sm:text-sm ${
                                         isEditing 
-                                        ? 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 border p-2.5' 
+                                        ? 'border-gray-300 focus:ring-teal-500 focus:border-teal-500 border p-2.5' 
                                         : 'bg-transparent border-transparent p-0 text-gray-600'
                                     }`}
                                 />
@@ -156,7 +155,7 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
                                     placeholder="123 Street Name, City"
                                     className={`pl-10 block w-full rounded-lg sm:text-sm ${
                                         isEditing 
-                                        ? 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 border p-2.5' 
+                                        ? 'border-gray-300 focus:ring-teal-500 focus:border-teal-500 border p-2.5' 
                                         : 'bg-transparent border-transparent p-0 text-gray-600'
                                     }`}
                                 />
@@ -179,7 +178,7 @@ export const CustomerProfile: React.FC<CustomerProfileProps> = ({ user: initialU
                             <button
                                 type="submit"
                                 disabled={isSaving}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 flex items-center gap-2"
+                                className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 flex items-center gap-2"
                             >
                                 <Save size={16} />
                                 {isSaving ? 'Saving...' : 'Save Changes'}

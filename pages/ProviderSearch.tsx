@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Provider, ServiceCategory } from '../types';
 import { api } from '../services/mockService';
@@ -45,7 +46,7 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
                         <select 
                             value={selectedService}
                             onChange={(e) => setSelectedService(e.target.value as ServiceCategory | 'All')}
-                            className="w-full appearance-none bg-white border border-gray-300 hover:border-indigo-400 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
+                            className="w-full appearance-none bg-white border border-gray-300 hover:border-teal-400 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow"
                         >
                             <option value="All">All Services</option>
                             {Object.values(ServiceCategory).map(s => (
@@ -66,7 +67,7 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
                         max="50" 
                         value={radius} 
                         onChange={(e) => setRadius(Number(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
                     />
                     <div className="flex justify-between text-xs text-gray-400 mt-1">
                         <span>1km</span>
@@ -80,7 +81,7 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
             </div>
         ) : providers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

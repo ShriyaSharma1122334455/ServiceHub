@@ -22,12 +22,12 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onBook }) 
             <img 
               src={provider.avatar} 
               alt={provider.name} 
-              className="h-16 w-16 rounded-full object-cover border-2 border-indigo-50"
+              className="h-16 w-16 rounded-full object-cover border-2 border-teal-50"
             />
             <div>
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 {provider.name}
-                {provider.verified && <BadgeCheck className="w-4 h-4 text-blue-500 ml-1" />}
+                {provider.verified && <BadgeCheck className="w-4 h-4 text-emerald-500 ml-1" />}
               </h3>
               <p className="text-sm text-gray-500">{provider.serviceCategory}</p>
               <div className="flex items-center mt-1 text-sm text-gray-500">
@@ -54,7 +54,7 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onBook }) 
                 {provider.distanceKm} km away
             </div>
             {provider.teamMembers && provider.teamMembers.length > 0 && (
-                <div className="flex items-center text-indigo-600">
+                <div className="flex items-center text-teal-600">
                     <Users className="w-3 h-3 mr-1" />
                     Team
                 </div>
@@ -75,7 +75,7 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({ provider, onBook }) 
         ) : (
             <button 
                 onClick={() => onBook(provider)}
-                className="mt-5 w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium text-sm hover:bg-indigo-700 transition-colors focus:ring-4 focus:ring-indigo-100"
+                className="mt-5 w-full bg-teal-600 text-white py-2.5 rounded-lg font-medium text-sm hover:bg-teal-700 transition-colors focus:ring-4 focus:ring-teal-100"
             >
                 Book Now
             </button>

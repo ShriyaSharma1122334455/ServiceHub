@@ -87,7 +87,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                   </p>
                   <button 
                     onClick={onSuccess}
-                    className="w-full bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+                    className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium hover:bg-teal-700 transition-colors"
                   >
                       Go to My Bookings
                   </button>
@@ -105,35 +105,35 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
 
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
                 {/* Left: Summary */}
-                <div className="bg-indigo-600 p-8 md:w-1/3 text-white flex flex-col justify-between">
+                <div className="bg-gradient-to-b from-teal-700 to-emerald-800 p-8 md:w-1/3 text-white flex flex-col justify-between">
                     <div>
-                        <h3 className="text-indigo-200 font-medium uppercase tracking-wider text-sm mb-4">
+                        <h3 className="text-teal-200 font-medium uppercase tracking-wider text-sm mb-4">
                             {isConsultation ? 'Consultation Details' : 'Service Details'}
                         </h3>
                         <div className="flex items-center gap-3 mb-6">
-                            <img src={provider.avatar} className="w-12 h-12 rounded-full border-2 border-indigo-400" alt="" />
+                            <img src={provider.avatar} className="w-12 h-12 rounded-full border-2 border-teal-400" alt="" />
                             <div>
                                 <div className="font-bold text-lg">{provider.name}</div>
-                                <div className="text-indigo-200 text-sm">{provider.serviceCategory}</div>
+                                <div className="text-teal-200 text-sm">{provider.serviceCategory}</div>
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <div className="flex items-center gap-3 text-indigo-100">
+                            <div className="flex items-center gap-3 text-teal-100">
                                 <DollarSign className="w-5 h-5" />
                                 <span>${activeService.price}/hr</span>
                             </div>
-                            <div className="flex items-center gap-3 text-indigo-100">
+                            <div className="flex items-center gap-3 text-teal-100">
                                 <Clock className="w-5 h-5" />
                                 <span>Est. {duration} hours</span>
                             </div>
                         </div>
                     </div>
-                    <div className="mt-8 pt-8 border-t border-indigo-500">
-                        <div className="flex justify-between items-center mb-1 text-indigo-200 text-sm">
+                    <div className="mt-8 pt-8 border-t border-teal-600">
+                        <div className="flex justify-between items-center mb-1 text-teal-200 text-sm">
                             <span>Subtotal</span>
                             <span>${basePrice.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between items-center mb-4 text-indigo-200 text-sm">
+                        <div className="flex justify-between items-center mb-4 text-teal-200 text-sm">
                             <span>Service Fee (15%)</span>
                             <span>${serviceFee.toFixed(2)}</span>
                         </div>
@@ -156,7 +156,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                              <select 
                                 value={selectedServiceIndex}
                                 onChange={(e) => setSelectedServiceIndex(Number(e.target.value))}
-                                className="block w-full py-3 px-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+                                className="block w-full py-3 px-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 bg-white"
                              >
                                  {provider.services.map((s, idx) => (
                                      <option key={idx} value={idx}>
@@ -185,7 +185,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                                     min={new Date().toISOString().split('T')[0]}
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                                 />
                                 <Calendar className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                             </div>
@@ -197,7 +197,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                                 <select 
                                     value={time}
                                     onChange={(e) => setTime(e.target.value)}
-                                    className="block w-full py-3 px-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="block w-full py-3 px-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                                 >
                                     {Array.from({ length: 13 }).map((_, i) => {
                                         const hour = i + 8; // 8 AM to 8 PM
@@ -214,7 +214,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                                     max="8" 
                                     value={duration}
                                     onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="block w-full py-3 px-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="block w-full py-3 px-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                                 />
                             </div>
                         </div>
@@ -224,7 +224,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ provider, customerId, 
                                 type="submit" 
                                 disabled={isSubmitting || !date}
                                 className={`w-full py-3.5 px-4 rounded-xl shadow-md text-white font-semibold text-lg transition-all
-                                    ${isSubmitting || !date ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 hover:-translate-y-0.5'}
+                                    ${isSubmitting || !date ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700 hover:-translate-y-0.5'}
                                 `}
                             >
                                 {isSubmitting ? 'Processing...' : (isConsultation ? 'Request Consultation' : 'Confirm Booking')}

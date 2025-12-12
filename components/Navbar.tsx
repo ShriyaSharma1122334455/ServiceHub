@@ -17,7 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
   const navItemClass = (path: string) => `
     px-3 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors
     ${currentPath === path 
-      ? 'bg-indigo-100 text-indigo-700' 
+      ? 'bg-teal-50 text-teal-700' 
       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
   `;
 
@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
               className="flex-shrink-0 flex items-center cursor-pointer"
               onClick={() => onNavigate('/')}
             >
-              <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-2">
+              <div className="h-8 w-8 bg-teal-600 rounded-lg flex items-center justify-center mr-2 shadow-sm">
                 <span className="text-white font-bold text-xl">S</span>
               </div>
               <span className="font-bold text-xl text-gray-900 tracking-tight">ServiceHub</span>
@@ -53,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
               <div className="flex items-center space-x-4">
                  <button 
                     onClick={onOpenSupport}
-                    className="p-2 text-gray-400 hover:text-indigo-600 transition-colors flex items-center gap-1"
+                    className="p-2 text-gray-400 hover:text-teal-600 transition-colors flex items-center gap-1"
                     title="Support & Help"
                  >
                     <HelpCircle size={20} />
@@ -84,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                   {user.role === UserRole.CUSTOMER && (
                       <button 
                         onClick={() => onNavigate('/profile')}
-                        className="ml-2 p-1 text-gray-400 hover:text-indigo-600 transition-colors"
+                        className="ml-2 p-1 text-gray-400 hover:text-teal-600 transition-colors"
                         title="My Profile"
                       >
                         <Settings size={18} />
@@ -104,13 +104,13 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
               <div className="flex items-center space-x-3">
                 <button 
                   onClick={() => onNavigate('/login')}
-                  className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Log In
                 </button>
                 <button 
                   onClick={() => onNavigate('/register')}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
+                  className="bg-teal-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm"
                 >
                   Get Started
                 </button>
@@ -181,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                   Log In
                 </div>
                 <div 
-                  className="block px-3 py-2 rounded-md text-base font-medium text-indigo-600 hover:bg-indigo-50"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-teal-600 hover:bg-teal-50"
                   onClick={() => { onNavigate('/register'); setIsOpen(false); }}
                 >
                   Sign Up

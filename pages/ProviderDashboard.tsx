@@ -151,7 +151,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                         <p className="text-sm text-gray-500">Total Earnings</p>
                         <p className="text-2xl font-bold text-gray-900">$1,240.50</p>
                     </div>
-                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <div className="p-3 bg-teal-50 text-teal-600 rounded-lg">
                         <DollarSign />
                     </div>
                 </div>
@@ -226,7 +226,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                                 <div className="text-right">
                                     <div className="font-medium text-gray-900">${booking.totalPrice.toFixed(2)}</div>
                                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                                        booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                                        booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-teal-100 text-teal-800'
                                     }`}>
                                         {booking.status}
                                     </span>
@@ -250,7 +250,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
               {(provider.services || []).map((service, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                       <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-xl">
+                          <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center text-xl">
                                 {/* Simple icon mapping based on first letter or generic */}
                                 {service.category[0]}
                           </div>
@@ -313,7 +313,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                   </div>
                   <button 
                     onClick={handleAddService}
-                    className="self-end bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+                    className="self-end bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center gap-2"
                   >
                       <Plus size={18} /> Add Service
                   </button>
@@ -363,7 +363,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                     onChange={(e) => setNewEmail(e.target.value)}
                     className="flex-1 p-2 border border-gray-300 rounded-lg"
                   />
-                  <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                  <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">
                       Invite
                   </button>
               </div>
@@ -386,7 +386,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                               type="text" 
                               value={profileForm.name} 
                               onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                           />
                       </div>
                       <div>
@@ -396,7 +396,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                               value={profileForm.phone} 
                               onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
                               placeholder="+1 555-0000"
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                           />
                       </div>
                   </div>
@@ -406,7 +406,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                           rows={3}
                           value={profileForm.bio} 
                           onChange={(e) => setProfileForm({...profileForm, bio: e.target.value})}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                       />
                   </div>
                   <div>
@@ -415,14 +415,14 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                           type="text" 
                           value={profileForm.address} 
                           onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                       />
                   </div>
                   <div className="flex justify-end">
                       <button 
                         type="submit" 
                         disabled={isSavingProfile}
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+                        className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center gap-2"
                       >
                           <Save size={16} /> {isSavingProfile ? 'Saving...' : 'Save Profile'}
                       </button>
@@ -457,7 +457,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                                  <option value="INSURANCE">Insurance Certificate</option>
                                  <option value="OTHER">Other</option>
                              </select>
-                             <label className="cursor-pointer bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium transition-colors">
+                             <label className="cursor-pointer bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 text-sm font-medium transition-colors">
                                  Choose File
                                  <input 
                                     type="file" 
@@ -467,7 +467,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                                  />
                              </label>
                         </div>
-                        {uploadingDoc && <p className="text-sm text-indigo-600 animate-pulse">Uploading...</p>}
+                        {uploadingDoc && <p className="text-sm text-teal-600 animate-pulse">Uploading...</p>}
                   </div>
               </div>
 
@@ -476,7 +476,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                   {(provider.verificationDocuments || []).map((doc) => (
                       <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                           <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-indigo-50 rounded flex items-center justify-center text-indigo-600">
+                              <div className="w-10 h-10 bg-teal-50 rounded flex items-center justify-center text-teal-600">
                                   <FileText size={20} />
                               </div>
                               <div>
@@ -508,7 +508,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <img src={provider.avatar} alt="" className="w-16 h-16 rounded-full border-2 border-indigo-100" />
+                    <img src={provider.avatar} alt="" className="w-16 h-16 rounded-full border-2 border-teal-100" />
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Welcome, {provider.name}</h1>
                         <p className="text-gray-500 flex items-center gap-2">
@@ -520,7 +520,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                 <div className="flex gap-3">
                     <button 
                         onClick={onOpenSupport}
-                        className="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-100 flex items-center gap-2"
+                        className="px-4 py-2 bg-teal-50 border border-teal-200 text-teal-700 rounded-lg hover:bg-teal-100 flex items-center gap-2"
                     >
                         <MessageCircle size={18} /> Raise Request
                     </button>
@@ -543,7 +543,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`flex items-center gap-2 pb-4 px-2 border-b-2 transition-colors whitespace-nowrap ${
                             activeTab === tab.id 
-                            ? 'border-indigo-600 text-indigo-600 font-medium' 
+                            ? 'border-teal-600 text-teal-600 font-medium' 
                             : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
                     >

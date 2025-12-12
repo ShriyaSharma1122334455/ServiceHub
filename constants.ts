@@ -12,7 +12,7 @@ export const SERVICE_ICONS: Record<ServiceCategory, string> = {
 // Admin Credentials Configuration
 export const ADMIN_CREDENTIALS = [
     { email: 'ShaDmin158509@gmail.com', password: 'HeLlO56', role: AdminRole.SUPER_ADMIN, name: 'Super Admin' },
-    { email: 'support@servicehub.com', password: 'cust123', role: AdminRole.CUSTOMER_SUPPORT, name: 'Requester Support' },
+    { email: 'support1@servicehub.com', password: 'cust123', role: AdminRole.CUSTOMER_SUPPORT, name: 'Requester Support' },
     { email: 'provider.help@servicehub.com', password: 'prov123', role: AdminRole.PROVIDER_SUPPORT, name: 'Provider Support' },
     { email: 'security@servicehub.com', password: 'sec123', role: AdminRole.VERIFICATION, name: 'Security Verification' },
     { email: 'category@servicehub.com', password: 'cat123', role: AdminRole.CATEGORY_MANAGER, name: 'Category Manager' },

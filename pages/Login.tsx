@@ -38,7 +38,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="h-12 w-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto">
+        <div className="h-12 w-12 bg-teal-600 rounded-xl flex items-center justify-center mx-auto">
             <span className="text-white font-bold text-2xl">S</span>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -46,7 +46,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <button onClick={onRegisterClick} className="font-medium text-indigo-600 hover:text-indigo-500">
+          <button onClick={onRegisterClick} className="font-medium text-teal-600 hover:text-teal-500">
             create a new account
           </button>
         </p>
@@ -70,7 +70,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
+                  className="focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
                   placeholder="you@example.com"
                 />
               </div>
@@ -91,7 +91,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
+                  className="focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
                 />
               </div>
             </div>
@@ -100,7 +100,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
@@ -122,14 +122,14 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
                     <button 
                         type="button"
                         onClick={() => fillCredential('demo@customer.com', '123456', 'USER')}
-                        className={`flex-1 text-center text-xs p-2 rounded border transition-colors ${!isAdminMode ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+                        className={`flex-1 text-center text-xs p-2 rounded border transition-colors ${!isAdminMode ? 'bg-teal-50 border-teal-200 text-teal-700 font-bold' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
                     >
                         Customer
                     </button>
                     <button 
                         type="button"
                         onClick={() => fillCredential('demo@provider.com', '123456', 'USER')}
-                        className={`flex-1 text-center text-xs p-2 rounded border transition-colors ${!isAdminMode ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+                        className={`flex-1 text-center text-xs p-2 rounded border transition-colors ${!isAdminMode ? 'bg-teal-50 border-teal-200 text-teal-700 font-bold' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
                     >
                         Provider
                     </button>
@@ -153,7 +153,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onRegisterClick }) => {
                                 key={idx}
                                 type="button"
                                 onClick={() => fillCredential(cred.email, cred.password, 'ADMIN')}
-                                className="text-left text-[10px] p-2 bg-white border border-gray-200 rounded hover:border-indigo-300 hover:shadow-sm transition-all"
+                                className="text-left text-[10px] p-2 bg-white border border-gray-200 rounded hover:border-teal-300 hover:shadow-sm transition-all"
                             >
                                 <div className="font-bold text-gray-700 truncate">{cred.name}</div>
                                 <div className="text-gray-400 truncate">{cred.email}</div>

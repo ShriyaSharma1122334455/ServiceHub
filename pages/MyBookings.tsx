@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Booking, BookingStatus, UserRole } from '../types';
 import { api } from '../services/mockService';
@@ -24,7 +25,7 @@ export const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
   const getStatusColor = (status: BookingStatus) => {
       switch (status) {
           case BookingStatus.COMPLETED: return 'bg-green-100 text-green-800';
-          case BookingStatus.ACCEPTED: return 'bg-blue-100 text-blue-800';
+          case BookingStatus.ACCEPTED: return 'bg-teal-100 text-teal-800';
           case BookingStatus.IN_PROGRESS: return 'bg-purple-100 text-purple-800';
           case BookingStatus.CANCELLED: return 'bg-red-100 text-red-800';
           default: return 'bg-yellow-100 text-yellow-800'; // Requested
@@ -81,7 +82,7 @@ export const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
                                     </button>
                                 )}
                                 {booking.status === BookingStatus.COMPLETED && (
-                                    <button className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors">
+                                    <button className="px-4 py-2 bg-teal-50 text-teal-700 rounded-lg text-sm font-medium hover:bg-teal-100 transition-colors">
                                         Write Review
                                     </button>
                                 )}

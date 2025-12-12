@@ -162,7 +162,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-600">{provider.serviceCategory}</td>
                             <td className="px-6 py-4">
-                                <button className="text-indigo-600 text-sm hover:underline flex items-center gap-1">
+                                <button className="text-teal-600 text-sm hover:underline flex items-center gap-1">
                                     <FileText size={14} /> View Docs
                                 </button>
                             </td>
@@ -262,7 +262,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                             <div className="mt-4 flex justify-between items-end">
                                 <div>
                                     <p className="text-xs text-gray-500">Providers</p>
-                                    <p className="text-2xl font-bold text-indigo-600">{stat.count}</p>
+                                    <p className="text-2xl font-bold text-teal-600">{stat.count}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs text-gray-500">Avg Rate</p>
@@ -293,13 +293,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* Sidebar */}
-            <aside className="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
+            <aside className="w-64 bg-black text-white flex-shrink-0 hidden md:flex flex-col">
                 <div className="p-6">
                     <div className="flex items-center gap-2 font-bold text-xl">
-                        <div className="w-8 h-8 bg-indigo-500 rounded flex items-center justify-center">A</div>
+                        <div className="w-8 h-8 bg-teal-500 rounded flex items-center justify-center">A</div>
                         Admin Portal
                     </div>
-                    <div className="mt-2 text-xs text-slate-400 uppercase tracking-wider font-semibold">
+                    <div className="mt-2 text-xs text-gray-400 uppercase tracking-wider font-semibold">
                         {role === AdminRole.SUPER_ADMIN ? 'Super Admin' : role.replace('_', ' ')}
                     </div>
                 </div>
@@ -308,7 +308,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                     {canAccess('overview') && (
                         <button 
                             onClick={() => setActiveSection('overview')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'overview' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'overview' ? 'bg-teal-600 text-white' : 'text-gray-300 hover:bg-gray-900'}`}
                         >
                             <LayoutDashboard size={20} /> Dashboard
                         </button>
@@ -317,7 +317,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                     {canAccess('tickets_customer') && (
                         <button 
                             onClick={() => setActiveSection('tickets_customer')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'tickets_customer' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'tickets_customer' ? 'bg-teal-600 text-white' : 'text-gray-300 hover:bg-gray-900'}`}
                         >
                             <Ticket size={20} /> Cust. Support
                         </button>
@@ -326,7 +326,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                     {canAccess('tickets_provider') && (
                         <button 
                             onClick={() => setActiveSection('tickets_provider')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'tickets_provider' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'tickets_provider' ? 'bg-teal-600 text-white' : 'text-gray-300 hover:bg-gray-900'}`}
                         >
                             <Users size={20} /> Prov. Support
                         </button>
@@ -335,7 +335,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                     {canAccess('verification') && (
                         <button 
                             onClick={() => setActiveSection('verification')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'verification' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'verification' ? 'bg-teal-600 text-white' : 'text-gray-300 hover:bg-gray-900'}`}
                         >
                             <ShieldCheck size={20} /> Verification
                         </button>
@@ -344,7 +344,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                     {canAccess('categories') && (
                         <button 
                             onClick={() => setActiveSection('categories')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'categories' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'categories' ? 'bg-teal-600 text-white' : 'text-gray-300 hover:bg-gray-900'}`}
                         >
                             <Layers size={20} /> Categories
                         </button>
@@ -353,15 +353,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin, onLogout 
                     {canAccess('ratings') && (
                         <button 
                             onClick={() => setActiveSection('ratings')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'ratings' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'ratings' ? 'bg-teal-600 text-white' : 'text-gray-300 hover:bg-gray-900'}`}
                         >
                             <Ban size={20} /> Ratings & Bans
                         </button>
                     )}
                 </nav>
 
-                <div className="p-4 border-t border-slate-800">
-                    <button onClick={onLogout} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                <div className="p-4 border-t border-gray-900">
+                    <button onClick={onLogout} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
                         <LogOut size={18} /> Sign Out
                     </button>
                 </div>
