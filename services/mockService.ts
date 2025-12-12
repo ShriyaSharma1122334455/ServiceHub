@@ -2,7 +2,35 @@
 import { Booking, BookingStatus, Provider, User, UserRole, ServiceCategory, SupportTicket, AdminRole, VerificationDocument } from '../types';
 import { MOCK_PROVIDERS, COMMISSION_RATE, MOCK_TICKETS, ADMIN_CREDENTIALS } from '../constants';
 
-// Simulating In-Memory Database
+const API_URL = 'http://localhost:8000';
+
+// --- Helper for Real API Calls ---
+async function apiCall(endpoint: string, method: string = 'GET', body?: any) {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    const token = localStorage.getItem('token');
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : undefined,
+        });
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.warn(`Backend call to ${endpoint} failed. Falling back to mock data if available.`);
+        throw error;
+    }
+}
+
+// --- Legacy Mock Data (Fallback) ---
 let bookings: Booking[] = [
   {
     id: 'b-init-1',
@@ -22,14 +50,12 @@ let bookings: Booking[] = [
 
 let providers: Provider[] = MOCK_PROVIDERS.map(p => ({
     ...p,
-    verificationDocuments: [], // Initialize with empty docs
+    verificationDocuments: [],
     phone: '555-0123',
     address: '123 Provider Lane'
 }));
 
 let tickets = [...MOCK_TICKETS];
-
-// Mock Users (Customers) for Admin view
 let customers: User[] = [
     { id: 'u1', name: 'Alice Johnson', email: 'alice@test.com', role: UserRole.CUSTOMER, rating: 4.8, isBanned: false, avatar: 'https://picsum.photos/200?random=10', phone: '555-0101', address: '123 Main St, Springfield' },
     { id: 'u2', name: 'Bob Smith', email: 'bob@test.com', role: UserRole.CUSTOMER, rating: 2.2, isBanned: false, avatar: 'https://picsum.photos/200?random=11', phone: '555-0102', address: '456 Oak Ave, Metropolis' } 
@@ -37,9 +63,38 @@ let customers: User[] = [
 
 export const api = {
   login: async (email: string, role?: UserRole, password?: string): Promise<User | Provider> => {
+    // 1. Try Real Backend First
+    try {
+        const formData = new URLSearchParams();
+        formData.append('username', email);
+        formData.append('password', password || '');
+
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.access_token);
+            // If it's a new user, register them in our mock state to keep UI working for other features
+            if (data.user.role === UserRole.PROVIDER) {
+                if (!providers.find(p => p.email === email)) {
+                     // Sync mock
+                     providers.push({ ...data.user, services: [], teamMembers: [], verificationDocuments: [] } as Provider);
+                }
+            }
+            return data.user;
+        }
+    } catch (e) {
+        console.warn("Real backend login failed, using mock fallback.");
+    }
+
+    // 2. Mock Fallback
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        // 1. Check Admin Login
+        // Admin Login
         const adminAccount = ADMIN_CREDENTIALS.find(c => c.email === email && c.password === password);
         if (adminAccount) {
             resolve({
@@ -53,14 +108,14 @@ export const api = {
             return;
         }
 
-        // 2. Provider Login
+        // Provider Login
         const existingProvider = providers.find(p => p.email === email);
         if (existingProvider && (role === UserRole.PROVIDER || !role)) {
             resolve(existingProvider);
             return;
         }
         
-        // 3. New Provider Mock (for demo)
+        // Auto-Register Mock Provider
         if (role === UserRole.PROVIDER) {
              const newProvider: Provider = {
                 id: `p-${Date.now()}`,
@@ -88,16 +143,16 @@ export const api = {
             return;
         }
 
-        // 4. Customer Login
+        // Customer Login
         const existingCustomer = customers.find(c => c.email === email);
         if (existingCustomer) {
             resolve(existingCustomer);
             return;
         }
 
-        // Default Customer Mock
+        // Auto-Register Mock Customer
         const newCustomer = {
-          id: 'u1',
+          id: `u-${Date.now()}`,
           name: email.split('@')[0],
           email,
           role: UserRole.CUSTOMER,
@@ -107,7 +162,6 @@ export const api = {
           phone: '',
           address: ''
         };
-        // Add to mock store so updates persist in session
         customers.push(newCustomer);
         resolve(newCustomer);
       }, 800);
@@ -115,6 +169,12 @@ export const api = {
   },
 
   updateUser: async (userId: string, updates: Partial<User>): Promise<User> => {
+      // Try Real Backend
+      try {
+           // Assume we have an endpoint for this
+           // return await apiCall(`/users/${userId}`, 'PATCH', updates);
+      } catch(e) {}
+
       return new Promise((resolve) => {
           setTimeout(() => {
               const customerIndex = customers.findIndex(c => c.id === userId);
@@ -123,10 +183,8 @@ export const api = {
                   resolve(customers[customerIndex]);
                   return;
               }
-              // If not found in customers, might be provider (Providers are Users too)
               const providerIndex = providers.findIndex(p => p.id === userId);
               if (providerIndex !== -1) {
-                  // Type assertion needed as providers array is typed Provider[]
                   providers[providerIndex] = { ...providers[providerIndex], ...updates } as Provider;
                   resolve(providers[providerIndex]);
                   return;
@@ -142,7 +200,7 @@ export const api = {
   ): Promise<Provider[]> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        let results = providers.filter(p => !p.isBanned && p.verified); // Only show verified & non-banned
+        let results = providers.filter(p => !p.isBanned && p.verified);
         if (category) {
           results = results.filter(p => p.services.some(s => s.category === category) || p.serviceCategory === category);
         }
@@ -243,8 +301,6 @@ export const api = {
   checkUserExists: async (email: string): Promise<boolean> => {
       return new Promise(resolve => setTimeout(() => resolve(true), 500)); 
   },
-
-  // --- Admin Functions ---
 
   getTickets: async (): Promise<SupportTicket[]> => {
       return new Promise(resolve => setTimeout(() => resolve(tickets), 400));

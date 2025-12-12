@@ -4,7 +4,7 @@ import { UserRole } from '../types';
 import { User, Briefcase } from 'lucide-react';
 
 interface RegisterProps {
-  onRegister: (email: string, role: UserRole) => void;
+  onRegister: (email: string, role: UserRole, password?: string) => void;
   onLoginClick: () => void;
 }
 
@@ -18,8 +18,9 @@ export const Register: React.FC<RegisterProps> = ({ onRegister, onLoginClick }) 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    // Simulate network delay for UX then call handler
     setTimeout(() => {
-        onRegister(email, role);
+        onRegister(email, role, password);
         setLoading(false);
     }, 800);
   };
