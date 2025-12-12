@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Provider, ServiceCategory } from '../types';
 import { api } from '../services/mockService';
 import { ProviderCard } from '../components/ProviderCard';
-import { Search as SearchIcon, MapPin, Filter } from 'lucide-react';
+import { Search as SearchIcon, MapPin, Filter, Sparkles } from 'lucide-react';
 
 interface ProviderSearchProps {
   onBook: (provider: Provider) => void;
@@ -15,6 +15,7 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
   // Filter States
   const [selectedService, setSelectedService] = useState<ServiceCategory | 'All'>('All');
   const [radius, setRadius] = useState<number>(10);
+  const [sortMethod, setSortMethod] = useState<'distance' | 'rating' | 'recommended'>('recommended');
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -24,12 +25,24 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
             selectedService === 'All' ? undefined : selectedService,
             radius
         );
-        setProviders(results);
+
+        // Sorting Logic (Simulating ML Ranking)
+        let sorted = [...results];
+        if (sortMethod === 'recommended') {
+            // Mock ML: Sort by rating weight + verified status
+            sorted.sort((a, b) => (b.rating + (b.verified ? 1 : 0)) - (a.rating + (a.verified ? 1 : 0)));
+        } else if (sortMethod === 'rating') {
+            sorted.sort((a, b) => b.rating - a.rating);
+        } else if (sortMethod === 'distance') {
+            sorted.sort((a, b) => a.distanceKm - b.distanceKm);
+        }
+
+        setProviders(sorted);
         setLoading(false);
     };
 
     fetchProviders();
-  }, [selectedService, radius]);
+  }, [selectedService, radius, sortMethod]);
 
   return (
     <div className="min-h-screen pb-20">
@@ -69,6 +82,20 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
                         className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
                     />
                 </div>
+
+                <div className="w-full md:w-auto">
+                    <div className="relative">
+                        <select
+                            value={sortMethod}
+                            onChange={(e) => setSortMethod(e.target.value as any)}
+                            className="w-full appearance-none bg-slate-900 text-white border-none pl-6 pr-10 py-3.5 rounded-2xl focus:ring-0 font-bold cursor-pointer"
+                        >
+                            <option value="recommended">✨ AI Recommended</option>
+                            <option value="rating">Top Rated</option>
+                            <option value="distance">Nearest</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
       </div>
@@ -82,8 +109,15 @@ export const ProviderSearch: React.FC<ProviderSearchProps> = ({ onBook }) => {
             </div>
         ) : providers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {providers.map(provider => (
-                    <ProviderCard key={provider.id} provider={provider} onBook={onBook} />
+                {providers.map((provider, index) => (
+                    <div key={provider.id} className="relative group">
+                        {sortMethod === 'recommended' && index === 0 && (
+                             <div className="absolute -top-3 left-6 z-10 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+                                <Sparkles size={10} fill="currentColor" /> Top Match
+                             </div>
+                        )}
+                        <ProviderCard provider={provider} onBook={onBook} />
+                    </div>
                 ))}
             </div>
         ) : (

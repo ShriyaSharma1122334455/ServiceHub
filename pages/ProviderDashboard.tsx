@@ -3,7 +3,7 @@ import { Provider, Booking, ServiceCategory, ServiceOffering } from '../types';
 import { api } from '../services/mockService';
 import { 
     LayoutDashboard, Users, Settings, DollarSign, 
-    AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save
+    AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save, BarChart3, TrendingUp, UserCheck
 } from 'lucide-react';
 
 interface ProviderDashboardProps {
@@ -15,7 +15,8 @@ interface ProviderDashboardProps {
 export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: initialProvider, onLogout, onOpenSupport }) => {
   const [provider, setProvider] = useState<Provider>(initialProvider);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'services' | 'team' | 'settings'>('overview');
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'services' | 'team' | 'settings'>('overview');
   
   // Form states
   const [newEmail, setNewEmail] = useState('');
@@ -43,6 +44,9 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
             }
             const data = await api.getBookings(provider.id, provider.role);
             setBookings(data);
+            
+            const stats = await api.getProviderAnalytics(provider.id);
+            setAnalytics(stats);
         } catch (e) {
             console.error("Failed to load dashboard data", e);
         }
@@ -241,6 +245,63 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
             </div>
         </div>
     </div>
+  );
+
+  const renderAnalytics = () => (
+      <div className="space-y-6">
+         {/* Monthly Revenue Chart */}
+         <div className={glassCard}>
+            <div className="flex justify-between items-center mb-8">
+                <h3 className="text-xl font-bold text-slate-900">Revenue Trends</h3>
+                <select className="bg-slate-100 border-none rounded-lg text-xs font-bold text-slate-600 px-3 py-1.5 outline-none">
+                    <option>Last 6 Months</option>
+                    <option>Last Year</option>
+                </select>
+            </div>
+            <div className="h-64 flex items-end justify-between gap-4 px-4 pb-2">
+                {analytics?.revenue.map((amount: number, idx: number) => {
+                    const height = (amount / Math.max(...analytics.revenue)) * 100;
+                    return (
+                        <div key={idx} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
+                            <div className="relative w-full flex justify-center">
+                                <div 
+                                    className="w-full max-w-[40px] bg-slate-200 rounded-t-xl transition-all duration-500 group-hover:bg-slate-800"
+                                    style={{ height: `${height}%` }}
+                                ></div>
+                                <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                                    ${amount}
+                                </div>
+                            </div>
+                            <span className="text-xs font-bold text-slate-400">{analytics.months[idx]}</span>
+                        </div>
+                    );
+                })}
+            </div>
+         </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className={glassCard}>
+                 <div className="flex items-center gap-4 mb-2">
+                     <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                        <Users size={20} />
+                     </div>
+                     <h4 className="font-bold text-slate-700">Client Retention</h4>
+                 </div>
+                 <div className="text-3xl font-bold text-slate-900 mt-2">{analytics ? Math.round((analytics.repeatCustomers / analytics.totalBookings) * 100) : 0}%</div>
+                 <p className="text-sm text-slate-400 font-medium mt-1">Return customer rate</p>
+             </div>
+             <div className={glassCard}>
+                 <div className="flex items-center gap-4 mb-2">
+                     <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                        <TrendingUp size={20} />
+                     </div>
+                     <h4 className="font-bold text-slate-700">Profile Views</h4>
+                 </div>
+                 <div className="text-3xl font-bold text-slate-900 mt-2">{analytics?.profileViews || 0}</div>
+                 <p className="text-sm text-slate-400 font-medium mt-1">Visits in last 30 days</p>
+             </div>
+         </div>
+      </div>
   );
 
   const renderServices = () => (
@@ -442,12 +503,33 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
               <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        Verification
+                        Verification & Background Check
                         {provider.verified && <CheckCircle size={20} className="text-blue-500 fill-blue-50" />}
                     </h3>
-                    <p className="text-sm text-slate-500 font-medium mt-1">Required to appear in search results.</p>
+                    <p className="text-sm text-slate-500 font-medium mt-1">Automated screening required for activation.</p>
                   </div>
               </div>
+
+              {/* Status Tracker */}
+               <div className="mb-8 bg-slate-50/50 p-6 rounded-3xl border border-slate-200">
+                   <h4 className="font-bold text-slate-700 text-sm mb-4">Screening Status</h4>
+                   <div className="flex items-center justify-between">
+                       <div className="flex flex-col items-center gap-2 opacity-50">
+                           <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center">1</div>
+                           <span className="text-xs font-bold text-slate-500">Submitted</span>
+                       </div>
+                       <div className="flex-1 h-1 bg-emerald-200 mx-2"></div>
+                       <div className="flex flex-col items-center gap-2">
+                           <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center animate-pulse">2</div>
+                           <span className="text-xs font-bold text-slate-900">Processing</span>
+                       </div>
+                       <div className="flex-1 h-1 bg-slate-200 mx-2"></div>
+                       <div className="flex flex-col items-center gap-2 opacity-30">
+                           <div className="w-8 h-8 rounded-full bg-slate-300 text-white flex items-center justify-center">3</div>
+                           <span className="text-xs font-bold text-slate-500">Verified</span>
+                       </div>
+                   </div>
+               </div>
 
               {/* Upload Area */}
               <div className="bg-slate-50/50 border-2 border-dashed border-slate-300 rounded-[2rem] p-8 text-center mb-6 transition-colors hover:bg-slate-50">
@@ -542,6 +624,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
             <div className="flex gap-1 mt-8 overflow-x-auto pb-1">
                 {[
                     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+                    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
                     { id: 'services', label: 'Services', icon: DollarSign },
                     { id: 'team', label: 'Team', icon: Users },
                     { id: 'settings', label: 'Settings', icon: Settings },
@@ -565,6 +648,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {activeTab === 'overview' && renderOverview()}
+          {activeTab === 'analytics' && renderAnalytics()}
           {activeTab === 'services' && renderServices()}
           {activeTab === 'team' && renderTeam()}
           {activeTab === 'settings' && renderSettings()}
