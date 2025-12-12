@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { Provider, Booking, BookingStatus, ServiceCategory, ServiceOffering } from '../types';
+import { Provider, Booking, ServiceCategory, ServiceOffering } from '../types';
 import { api } from '../services/mockService';
 import { 
-    LayoutDashboard, Users, Calendar, Settings, DollarSign, 
-    Clock, AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save
+    LayoutDashboard, Users, Settings, DollarSign, 
+    AlertTriangle, Plus, Trash2, CheckCircle, Power, MessageCircle, FileText, Upload, Save
 } from 'lucide-react';
 
 interface ProviderDashboardProps {
@@ -38,7 +38,6 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   useEffect(() => {
     const refreshData = async () => {
         try {
-            // Re-fetch provider data to ensure we have the latest status/services
             const updatedProvider = await api.getProviderById(provider.id);
             if (updatedProvider) {
                 setProvider(updatedProvider);
@@ -59,7 +58,6 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   };
 
   const handleAddService = async () => {
-      // Allow multiple services of same category if descriptions differ (e.g. Consultation vs Full Project)
       const newService: ServiceOffering = {
           category: newServiceCategory,
           price: newServicePrice,
@@ -133,41 +131,44 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
 
   const getStatusBadge = (status: string) => {
       const colors: Record<string, string> = {
-          'AVAILABLE': 'bg-green-100 text-green-800',
-          'BUSY': 'bg-yellow-100 text-yellow-800',
-          'OFF_DUTY': 'bg-gray-100 text-gray-800'
+          'AVAILABLE': 'bg-green-100/60 text-green-800 border-green-200',
+          'BUSY': 'bg-yellow-100/60 text-yellow-800 border-yellow-200',
+          'OFF_DUTY': 'bg-gray-100/60 text-gray-800 border-gray-200'
       };
       return colors[status] || 'bg-gray-100';
   };
+
+  // Glass Card Base Class
+  const glassCard = "bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:bg-white/70";
 
   // Render Functions
   const renderOverview = () => (
     <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className={glassCard}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm text-gray-500">Total Earnings</p>
-                        <p className="text-2xl font-bold text-gray-900">$1,240.50</p>
+                        <p className="text-sm font-medium text-gray-500">Total Earnings</p>
+                        <p className="text-3xl font-extrabold text-gray-900 mt-1">$1,240.50</p>
                     </div>
-                    <div className="p-3 bg-teal-50 text-teal-600 rounded-lg">
-                        <DollarSign />
+                    <div className="p-4 bg-teal-100/50 text-teal-700 rounded-xl shadow-inner">
+                        <DollarSign size={24} />
                     </div>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className={glassCard}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm text-gray-500">Rating</p>
-                        <p className="text-2xl font-bold text-gray-900">{provider.rating?.toFixed(1) || '0.0'} <span className="text-sm text-gray-400 font-normal">/ 5.0</span></p>
+                        <p className="text-sm font-medium text-gray-500">Rating</p>
+                        <p className="text-3xl font-extrabold text-gray-900 mt-1">{provider.rating?.toFixed(1) || '0.0'} <span className="text-sm text-gray-400 font-normal">/ 5.0</span></p>
                     </div>
-                    <div className={`p-3 rounded-lg ${provider.rating < 3 ? 'bg-red-50 text-red-600' : 'bg-yellow-50 text-yellow-600'}`}>
-                        <AlertTriangle />
+                    <div className={`p-4 rounded-xl shadow-inner ${provider.rating < 3 ? 'bg-red-100/50 text-red-600' : 'bg-amber-100/50 text-amber-600'}`}>
+                        <AlertTriangle size={24} />
                     </div>
                 </div>
                 {provider.rating > 0 && provider.rating < 3.5 && (
-                    <p className="mt-2 text-xs text-red-600 font-medium">Warning: Low rating. Risk of account suspension.</p>
+                    <p className="mt-3 text-xs text-red-600 font-bold bg-red-50 px-2 py-1 rounded-lg w-fit">Warning: Low rating</p>
                 )}
                 {provider.isBanned && (
                     <div className="mt-2 p-2 bg-red-100 text-red-800 text-sm rounded border border-red-200 text-center font-bold">
@@ -175,25 +176,25 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                     </div>
                 )}
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className={glassCard}>
                  <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm text-gray-500">Status</p>
-                        <span className={`inline-block px-2 py-1 text-sm font-medium rounded-full mt-1 ${getStatusBadge(provider.availabilityStatus || 'OFF_DUTY')}`}>
+                        <p className="text-sm font-medium text-gray-500">Status</p>
+                        <span className={`inline-block px-3 py-1 text-sm font-bold rounded-full mt-2 border ${getStatusBadge(provider.availabilityStatus || 'OFF_DUTY')}`}>
                             {(provider.availabilityStatus || 'OFF_DUTY').replace('_', ' ')}
                         </span>
                     </div>
                     <button 
                         onClick={handleStatusToggle}
                         disabled={provider.availabilityStatus === 'BUSY'}
-                        className={`p-3 rounded-lg transition-colors ${
+                        className={`p-4 rounded-xl transition-all shadow-sm ${
                             provider.availabilityStatus === 'BUSY' 
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-gray-50 hover:bg-gray-100'
+                            : 'bg-white hover:scale-105 active:scale-95'
                         }`}
                         title="Toggle Availability"
                     >
-                        <Power className={`w-5 h-5 ${provider.availabilityStatus === 'OFF_DUTY' ? 'text-gray-400' : 'text-green-600'}`} />
+                        <Power className={`w-6 h-6 ${provider.availabilityStatus === 'OFF_DUTY' ? 'text-gray-400' : 'text-green-500'}`} />
                     </button>
                 </div>
                 {provider.availabilityStatus === 'BUSY' && <p className="text-xs text-gray-500 mt-2">Cannot change status while busy.</p>}
@@ -201,32 +202,32 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
         </div>
 
         {/* Recent Bookings */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="font-semibold text-gray-900">Recent Requests</h3>
+        <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-white/50 overflow-hidden">
+            <div className="px-6 py-5 border-b border-white/20 bg-white/20">
+                <h3 className="font-bold text-gray-900 text-lg">Recent Requests</h3>
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-white/40">
                 {bookings.length === 0 ? (
-                    <div className="p-6 text-center text-gray-500">No bookings yet.</div>
+                    <div className="p-8 text-center text-gray-500">No bookings yet.</div>
                 ) : (
                     bookings.slice(0, 5).map(booking => (
-                        <div key={booking.id} className="p-6 hover:bg-gray-50 transition-colors">
+                        <div key={booking.id} className="p-6 hover:bg-white/40 transition-colors">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="flex items-center gap-2">
-                                        <h4 className="font-medium text-gray-900">{booking.serviceCategory}</h4>
+                                    <div className="flex items-center gap-3">
+                                        <h4 className="font-bold text-gray-800">{booking.serviceCategory}</h4>
                                         {booking.bookingType === 'CONSULTATION' && (
-                                            <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">Consultation</span>
+                                            <span className="px-2 py-0.5 bg-purple-100/60 border border-purple-200 text-purple-800 text-xs rounded-lg font-medium">Consultation</span>
                                         )}
                                     </div>
-                                    <p className="text-sm text-gray-500 mt-1">
+                                    <p className="text-sm text-gray-500 mt-1 font-medium">
                                         {new Date(booking.date).toLocaleDateString()} at {booking.time} • {booking.durationHours} hrs
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-medium text-gray-900">${booking.totalPrice.toFixed(2)}</div>
-                                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                                        booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-teal-100 text-teal-800'
+                                    <div className="font-bold text-gray-900 text-lg">${booking.totalPrice.toFixed(2)}</div>
+                                    <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                                        booking.status === 'COMPLETED' ? 'bg-green-100/60 text-green-800 border-green-200' : 'bg-teal-100/60 text-teal-800 border-teal-200'
                                     }`}>
                                         {booking.status}
                                     </span>
@@ -241,29 +242,28 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   );
 
   const renderServices = () => (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className={glassCard}>
           <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold text-gray-900">My Services & Pricing</h3>
           </div>
           
           <div className="grid gap-4 mb-8">
               {(provider.services || []).map((service, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                      <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center text-xl">
-                                {/* Simple icon mapping based on first letter or generic */}
+                  <div key={index} className="flex items-center justify-between p-4 bg-white/40 border border-white/50 rounded-xl">
+                      <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-teal-100/50 rounded-xl flex items-center justify-center text-2xl shadow-sm">
                                 {service.category[0]}
                           </div>
                           <div>
-                              <h4 className="font-medium text-gray-900">{service.category}</h4>
+                              <h4 className="font-bold text-gray-900">{service.category}</h4>
                               <p className="text-sm text-gray-500">{service.description}</p>
                           </div>
                       </div>
                       <div className="flex items-center gap-4">
-                          <span className="font-bold text-gray-900">${service.price}/hr</span>
+                          <span className="font-bold text-gray-900 bg-white/50 px-3 py-1 rounded-lg border border-white/50">${service.price}/hr</span>
                           <button 
                             onClick={() => handleRemoveService(index)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                           >
                               <Trash2 size={18} />
                           </button>
@@ -275,14 +275,14 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
               )}
           </div>
 
-          <div className="bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300">
-              <h4 className="font-medium text-gray-900 mb-4">Add New Service</h4>
+          <div className="bg-gray-50/50 p-6 rounded-xl border border-dashed border-gray-300">
+              <h4 className="font-bold text-gray-900 mb-4">Add New Service</h4>
               <div className="flex flex-col gap-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Service Type</label>
                         <select 
-                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                             value={newServiceCategory}
                             onChange={(e) => setNewServiceCategory(e.target.value as ServiceCategory)}
                         >
@@ -292,28 +292,28 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
                         <input 
                             type="text" 
                             placeholder="e.g. Initial Consultation"
                             value={newServiceDescription}
                             onChange={(e) => setNewServiceDescription(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Price / Hr</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Price / Hr</label>
                         <input 
                             type="number" 
                             value={newServicePrice}
                             onChange={(e) => setNewServicePrice(Number(e.target.value))}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                         />
                     </div>
                   </div>
                   <button 
                     onClick={handleAddService}
-                    className="self-end bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center gap-2"
+                    className="self-end bg-teal-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-teal-700 flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
                   >
                       <Plus size={18} /> Add Service
                   </button>
@@ -323,25 +323,25 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   );
 
   const renderTeam = () => (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className={glassCard}>
            <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold text-gray-900">Team Management</h3>
-              <span className="text-sm text-gray-500">{(provider.teamMembers || []).length} Members</span>
+              <span className="text-sm font-medium bg-gray-100 px-2 py-1 rounded-lg">{(provider.teamMembers || []).length} Members</span>
           </div>
 
           <div className="space-y-4 mb-8">
               {(provider.teamMembers || []).map(member => (
-                  <div key={member.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={member.id} className="flex items-center justify-between p-4 bg-white/40 border border-white/50 rounded-xl">
                       <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold border-2 border-white shadow-sm">
                               {member.name[0]}
                           </div>
                           <div>
-                              <p className="font-medium text-gray-900">{member.name}</p>
+                              <p className="font-bold text-gray-900">{member.name}</p>
                               <p className="text-sm text-gray-500">{member.email}</p>
                           </div>
                       </div>
-                      <span className={`px-2 py-1 text-xs rounded-full ${member.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      <span className={`px-3 py-1 text-xs font-bold rounded-full border ${member.status === 'ACTIVE' ? 'bg-green-100/60 text-green-800 border-green-200' : 'bg-yellow-100/60 text-yellow-800 border-yellow-200'}`}>
                           {member.status}
                       </span>
                   </div>
@@ -351,19 +351,19 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
               )}
           </div>
 
-          <form onSubmit={handleAddTeamMember} className="border-t border-gray-200 pt-6">
-              <h4 className="font-medium text-gray-900 mb-4">Invite Team Member</h4>
+          <form onSubmit={handleAddTeamMember} className="border-t border-gray-200/50 pt-6">
+              <h4 className="font-bold text-gray-900 mb-2">Invite Team Member</h4>
               <p className="text-sm text-gray-500 mb-4">They must have a registered account on ServiceHub.</p>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                   <input 
                     type="email" 
                     placeholder="Enter email address"
                     required
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg"
+                    className="flex-1 p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                   />
-                  <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">
+                  <button type="submit" className="bg-teal-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-teal-700 shadow-md">
                       Invite
                   </button>
               </div>
@@ -374,64 +374,64 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   const renderSettings = () => (
       <div className="space-y-6">
           {/* Profile Details Form */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className={glassCard}>
               <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-bold text-gray-900">Edit Profile</h3>
               </div>
               <form onSubmit={handleSaveProfile} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Company / Name</label>
+                          <label className="block text-sm font-bold text-gray-700 mb-1">Company / Name</label>
                           <input 
                               type="text" 
                               value={profileForm.name} 
                               onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                              className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                           />
                       </div>
                       <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                          <label className="block text-sm font-bold text-gray-700 mb-1">Phone</label>
                           <input 
                               type="text" 
                               value={profileForm.phone} 
                               onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
                               placeholder="+1 555-0000"
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                              className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                           />
                       </div>
                   </div>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Bio / Description</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Bio / Description</label>
                       <textarea 
                           rows={3}
                           value={profileForm.bio} 
                           onChange={(e) => setProfileForm({...profileForm, bio: e.target.value})}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                          className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                       />
                   </div>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Address</label>
                       <input 
                           type="text" 
                           value={profileForm.address} 
                           onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                          className="w-full p-2.5 border border-gray-300/60 bg-white/70 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
                       />
                   </div>
                   <div className="flex justify-end">
                       <button 
                         type="submit" 
                         disabled={isSavingProfile}
-                        className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center gap-2"
+                        className="bg-teal-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-teal-700 flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
                       >
-                          <Save size={16} /> {isSavingProfile ? 'Saving...' : 'Save Profile'}
+                          <Save size={18} /> {isSavingProfile ? 'Saving...' : 'Save Profile'}
                       </button>
                   </div>
               </form>
           </div>
 
           {/* Verification Documents Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className={glassCard}>
               <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
@@ -443,21 +443,21 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
               </div>
 
               {/* Upload Area */}
-              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-6 text-center mb-6">
+              <div className="bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center mb-6">
                   <div className="flex flex-col items-center">
-                        <Upload className="w-10 h-10 text-gray-400 mb-3" />
-                        <div className="flex items-center gap-4 mb-4">
+                        <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
                              <select 
                                 value={selectedDocType} 
                                 onChange={(e) => setSelectedDocType(e.target.value as any)}
-                                className="p-2 border border-gray-300 rounded-lg bg-white text-sm"
+                                className="p-2.5 border border-gray-300 rounded-xl bg-white text-sm outline-none focus:ring-2 focus:ring-teal-500"
                              >
                                  <option value="ID">Government ID</option>
                                  <option value="LICENSE">Professional License</option>
                                  <option value="INSURANCE">Insurance Certificate</option>
                                  <option value="OTHER">Other</option>
                              </select>
-                             <label className="cursor-pointer bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 text-sm font-medium transition-colors">
+                             <label className="cursor-pointer bg-teal-600 text-white px-5 py-2.5 rounded-xl hover:bg-teal-700 text-sm font-medium transition-colors shadow-md">
                                  Choose File
                                  <input 
                                     type="file" 
@@ -467,27 +467,27 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                                  />
                              </label>
                         </div>
-                        {uploadingDoc && <p className="text-sm text-teal-600 animate-pulse">Uploading...</p>}
+                        {uploadingDoc && <p className="text-sm text-teal-600 animate-pulse font-medium">Uploading...</p>}
                   </div>
               </div>
 
               {/* Documents List */}
               <div className="space-y-3">
                   {(provider.verificationDocuments || []).map((doc) => (
-                      <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                          <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-teal-50 rounded flex items-center justify-center text-teal-600">
+                      <div key={doc.id} className="flex items-center justify-between p-4 bg-white/40 border border-white/50 rounded-xl">
+                          <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600">
                                   <FileText size={20} />
                               </div>
                               <div>
-                                  <p className="font-medium text-gray-900 text-sm">{doc.name}</p>
-                                  <p className="text-xs text-gray-500">{doc.type} • {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                                  <p className="font-bold text-gray-900 text-sm">{doc.name}</p>
+                                  <p className="text-xs text-gray-500 font-medium">{doc.type} • {new Date(doc.uploadedAt).toLocaleDateString()}</p>
                               </div>
                           </div>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                              doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                              'bg-yellow-100 text-yellow-800'
+                          <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                              doc.status === 'APPROVED' ? 'bg-green-100/60 text-green-800 border-green-200' :
+                              doc.status === 'REJECTED' ? 'bg-red-100/60 text-red-800 border-red-200' :
+                              'bg-yellow-100/60 text-yellow-800 border-yellow-200'
                           }`}>
                               {doc.status}
                           </span>
@@ -502,36 +502,36 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen pb-12">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 mb-8">
+      <div className="bg-white/60 backdrop-blur-lg border-b border-white/20 mb-8 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <img src={provider.avatar} alt="" className="w-16 h-16 rounded-full border-2 border-teal-100" />
+                <div className="flex items-center gap-5">
+                    <img src={provider.avatar} alt="" className="w-20 h-20 rounded-2xl border-4 border-white shadow-md object-cover" />
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Welcome, {provider.name}</h1>
-                        <p className="text-gray-500 flex items-center gap-2">
+                        <h1 className="text-3xl font-extrabold text-gray-900">Welcome, {provider.name}</h1>
+                        <p className="text-gray-500 font-medium flex items-center gap-2 mt-1">
                             {provider.serviceCategory} Professional 
-                            {provider.verified && <CheckCircle size={16} className="text-blue-500" />}
+                            {provider.verified && <CheckCircle size={18} className="text-blue-500 fill-white" />}
                         </p>
                     </div>
                 </div>
                 <div className="flex gap-3">
                     <button 
                         onClick={onOpenSupport}
-                        className="px-4 py-2 bg-teal-50 border border-teal-200 text-teal-700 rounded-lg hover:bg-teal-100 flex items-center gap-2"
+                        className="px-5 py-2.5 bg-white/50 border border-teal-200 text-teal-800 rounded-xl hover:bg-teal-50/50 flex items-center gap-2 font-medium transition-all"
                     >
                         <MessageCircle size={18} /> Raise Request
                     </button>
-                    <button onClick={onLogout} className="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50">
+                    <button onClick={onLogout} className="px-5 py-2.5 bg-white/50 border border-red-200 text-red-700 rounded-xl hover:bg-red-50/50 font-medium transition-all">
                         Logout
                     </button>
                 </div>
             </div>
             
             {/* Tabs */}
-            <div className="flex gap-6 mt-8 overflow-x-auto">
+            <div className="flex gap-8 mt-10 overflow-x-auto border-b border-gray-200/50">
                 {[
                     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
                     { id: 'services', label: 'Services & Pricing', icon: DollarSign },
@@ -541,13 +541,13 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ provider: 
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`flex items-center gap-2 pb-4 px-2 border-b-2 transition-colors whitespace-nowrap ${
+                        className={`flex items-center gap-2 pb-4 px-2 border-b-[3px] transition-all whitespace-nowrap font-medium text-sm ${
                             activeTab === tab.id 
-                            ? 'border-teal-600 text-teal-600 font-medium' 
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                            ? 'border-teal-600 text-teal-700' 
+                            : 'border-transparent text-gray-500 hover:text-gray-800'
                         }`}
                     >
-                        <tab.icon size={18} />
+                        <tab.icon size={18} className={activeTab === tab.id ? 'stroke-[2.5px]' : ''} />
                         {tab.label}
                     </button>
                 ))}

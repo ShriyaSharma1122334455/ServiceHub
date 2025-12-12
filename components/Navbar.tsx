@@ -15,25 +15,25 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
   const [isOpen, setIsOpen] = useState(false);
 
   const navItemClass = (path: string) => `
-    px-3 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors
+    px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-300
     ${currentPath === path 
-      ? 'bg-teal-50 text-teal-700' 
-      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
+      ? 'bg-teal-500/10 text-teal-800 shadow-inner' 
+      : 'text-gray-600 hover:bg-white/40 hover:text-teal-700 hover:shadow-sm'}
   `;
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-white/20 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div 
-              className="flex-shrink-0 flex items-center cursor-pointer"
+              className="flex-shrink-0 flex items-center cursor-pointer group"
               onClick={() => onNavigate('/')}
             >
-              <div className="h-8 w-8 bg-teal-600 rounded-lg flex items-center justify-center mr-2 shadow-sm">
-                <span className="text-white font-bold text-xl">S</span>
+              <div className="h-9 w-9 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center mr-2 shadow-lg group-hover:scale-105 transition-transform">
+                <span className="text-white font-bold text-xl drop-shadow-sm">S</span>
               </div>
-              <span className="font-bold text-xl text-gray-900 tracking-tight">ServiceHub</span>
+              <span className="font-bold text-xl text-gray-800 tracking-tight">ServiceHub</span>
             </div>
             
             <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
@@ -53,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
               <div className="flex items-center space-x-4">
                  <button 
                     onClick={onOpenSupport}
-                    className="p-2 text-gray-400 hover:text-teal-600 transition-colors flex items-center gap-1"
+                    className="p-2 text-gray-500 hover:text-teal-700 hover:bg-white/50 rounded-full transition-all flex items-center gap-1"
                     title="Support & Help"
                  >
                     <HelpCircle size={20} />
@@ -69,22 +69,24 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
                     </span>
                  )}
 
-                <div className="flex items-center gap-2 pl-4 border-l border-gray-200">
-                  <img 
-                    src={user.avatar || "https://via.placeholder.com/32"} 
-                    alt="Avatar" 
-                    className="h-8 w-8 rounded-full border border-gray-200"
-                  />
+                <div className="flex items-center gap-2 pl-4 border-l border-gray-300/50">
+                  <div className="relative">
+                    <img 
+                        src={user.avatar || "https://via.placeholder.com/32"} 
+                        alt="Avatar" 
+                        className="h-9 w-9 rounded-full border-2 border-white shadow-md"
+                    />
+                    <div className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-400 border-2 border-white rounded-full"></div>
+                  </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900">{user.name}</span>
-                    <span className="text-xs text-gray-500 capitalize">{user.role.toLowerCase()}</span>
+                    <span className="text-sm font-bold text-gray-800">{user.name}</span>
+                    <span className="text-[10px] text-teal-600 font-semibold uppercase tracking-wider">{user.role.toLowerCase()}</span>
                   </div>
                   
-                  {/* Dropdown for user actions could go here, for now adding direct buttons */}
                   {user.role === UserRole.CUSTOMER && (
                       <button 
                         onClick={() => onNavigate('/profile')}
-                        className="ml-2 p-1 text-gray-400 hover:text-teal-600 transition-colors"
+                        className="ml-2 p-2 text-gray-500 hover:text-teal-600 hover:bg-white/50 rounded-full transition-all"
                         title="My Profile"
                       >
                         <Settings size={18} />
@@ -93,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
 
                   <button 
                     onClick={onLogout}
-                    className="ml-1 p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    className="ml-1 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50/50 rounded-full transition-all"
                     title="Sign Out"
                   >
                     <LogOut size={18} />
@@ -104,13 +106,13 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
               <div className="flex items-center space-x-3">
                 <button 
                   onClick={() => onNavigate('/login')}
-                  className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-600 hover:text-teal-700 hover:bg-white/40 px-4 py-2 rounded-xl text-sm font-medium transition-all"
                 >
                   Log In
                 </button>
                 <button 
                   onClick={() => onNavigate('/register')}
-                  className="bg-teal-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm"
+                  className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 shadow-md border border-white/20"
                 >
                   Get Started
                 </button>
@@ -122,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
           <div className="flex items-center sm:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-white/50"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -132,17 +134,17 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="sm:hidden bg-white border-t border-gray-200">
-          <div className="pt-2 pb-3 space-y-1 px-2">
+        <div className="sm:hidden bg-white/90 backdrop-blur-xl border-t border-white/20 absolute w-full shadow-lg">
+          <div className="pt-2 pb-3 space-y-1 px-4">
             <div 
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
+              className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
               onClick={() => { onNavigate('/'); setIsOpen(false); }}
             >
               Home
             </div>
             {user && user.role === UserRole.CUSTOMER && (
                <div 
-               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
+               className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
                onClick={() => { onNavigate('/search'); setIsOpen(false); }}
              >
                Find Services
@@ -150,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
             )}
             {user && (
               <div 
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
+                className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
                 onClick={() => { onNavigate('/bookings'); setIsOpen(false); }}
               >
                 My Bookings
@@ -158,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
             )}
             {user && user.role === UserRole.CUSTOMER && (
               <div 
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50 flex items-center gap-2"
                 onClick={() => { onNavigate('/profile'); setIsOpen(false); }}
               >
                  <Settings size={16} /> My Profile
@@ -166,7 +168,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
             )}
             {user && (
                 <div 
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50 flex items-center gap-2"
                     onClick={() => { onOpenSupport(); setIsOpen(false); }}
                 >
                     <HelpCircle size={16} /> Support & Help
@@ -175,13 +177,13 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
             {!user && (
               <>
                 <div 
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
+                  className="block px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50/50"
                   onClick={() => { onNavigate('/login'); setIsOpen(false); }}
                 >
                   Log In
                 </div>
                 <div 
-                  className="block px-3 py-2 rounded-md text-base font-medium text-teal-600 hover:bg-teal-50"
+                  className="block px-3 py-3 rounded-lg text-base font-medium text-teal-600 hover:bg-teal-50/50"
                   onClick={() => { onNavigate('/register'); setIsOpen(false); }}
                 >
                   Sign Up
@@ -190,7 +192,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onNavigate, curr
             )}
              {user && (
                <div 
-                  className="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                  className="block px-3 py-3 rounded-lg text-base font-medium text-red-600 hover:bg-red-50/50"
                   onClick={() => { onLogout(); setIsOpen(false); }}
                 >
                   Sign Out

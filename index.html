@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,6 +10,20 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
+      }
+      /* Custom scrollbar for glass aesthetic */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(20, 184, 166, 0.3);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(20, 184, 166, 0.6);
       }
     </style>
   <script type="importmap">
@@ -22,7 +37,13 @@
 }
 </script>
 </head>
-  <body>
+  <body class="bg-gradient-to-br from-teal-50 via-cyan-50 to-emerald-50 min-h-screen relative text-gray-800 antialiased">
+    <!-- Decorative Ambient Background Blobs -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-teal-400/20 blur-[120px] mix-blend-multiply animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-400/20 blur-[120px] mix-blend-multiply animate-pulse" style="animation-delay: 2s"></div>
+        <div class="absolute top-[40%] left-[40%] w-[40%] h-[40%] rounded-full bg-cyan-400/20 blur-[120px] mix-blend-multiply animate-pulse" style="animation-delay: 4s"></div>
+    </div>
     <div id="root"></div>
   </body>
 </html>
