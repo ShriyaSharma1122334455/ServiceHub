@@ -1,5 +1,5 @@
 
-# ServiceHub - On-Demand Home Services Platform
+# ServiceHub - On-Demand Home Services Platform [Demo](https://aistudio.google.com/apps/drive/1O0Flyq4JK83P3Gv06Sv7GeH-kJoT0m4p?fullscreenApplet=true&showPreview=true&showAssistant=true)
 
 **ServiceHub** is a modern, scalable, and sophisticated marketplace application designed to connect homeowners with verified service professionals (Cleaners, Plumbers, Electricians, Interior Designers) in real-time. Think of it as the "Uber for Home Services."
 
